@@ -17,22 +17,22 @@
 // o peso default de uma aresta é 0
 
 typedef struct grafo {
-	int direcionado;
-	int ponderado;
+
+	int          direcionado;
+	int          ponderado;
 	unsigned int n_vertices;
 	unsigned int n_arestas;
-	
-	char* nome;
-	
-	vertice *vertices;
-	}*grafo;
+	char        *nome_grafo;
+	vertice     *vertices;
+
+}*grafo;
 
 //------------------------------------------------------------------------------
 // devolve o nome do grafo g
 
 char *nome_grafo(grafo g) {
 
-	return g.nome;
+	return g->nome_grafo;
 }
 
 //------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ char *nome_grafo(grafo g) {
 
 int direcionado(grafo g) {
 
-	return g.direcionado;
+	return g->direcionado;
 }
 
 //------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ int direcionado(grafo g) {
 
 int ponderado(grafo g) {
 
-	return g.ponderado;
+	return g->ponderado;
 }
 
 //------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ int ponderado(grafo g) {
 
 unsigned int n_vertices(grafo g) {
 
-	return g.n_vertices;
+	return g->n_vertices;
 }
 
 //------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ unsigned int n_vertices(grafo g) {
 
 unsigned int n_arestas(grafo g) {
 
-	return g.n_arestas;
+	return g->n_arestas;
 }
 
 //------------------------------------------------------------------------------
@@ -74,19 +74,19 @@ unsigned int n_arestas(grafo g) {
 // 
 // cada vértice tem um nome que é uma "string"
 
-typedef struct vertice{
+typedef struct vertice {
+
 	char *nome;
 	lista arestas;
-	}
 
- *vertice;
+}*vertice;
 
 //------------------------------------------------------------------------------
 // devolve o nome do vertice v
 
 char *nome_vertice(vertice v) {
 
-	return v.nome;
+	return v->nome;
 }
 
 //------------------------------------------------------------------------------
@@ -152,14 +152,14 @@ grafo copia_grafo(grafo g) {
 //------------------------------------------------------------------------------
 // devolve a vizinhança do vértice v no grafo g
 // 
-// se direcao == 0, v é um vértice de um grafo não direcionado
-//                  e a função devolve sua vizinhanca 
+// se direcao ==  0, v é um vértice de um grafo não direcionado
+//                   e a função devolve sua vizinhanca 
 //
 // se direcao == -1, v é um vértice de um grafo direcionado e a função
 //                   devolve sua vizinhanca de entrada
 //
-// se direcao == 1, v é um vértice de um grafo direcionado e a função
-//                  devolve sua vizinhanca de saída
+// se direcao ==  1, v é um vértice de um grafo direcionado e a função
+//                   devolve sua vizinhanca de saída
 
 lista vizinhanca(vertice v, int direcao, grafo g) {
 
@@ -178,7 +178,8 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 // se direcao == 1, v é um vértice de um grafo direcionado
 //                  e a função devolve seu grau de saída
 
-unsigned int grau(vertice v, int direcao, grafo g){
+unsigned int grau(vertice v, int direcao, grafo g) {
+	
 	return v.grau;
 }
 
@@ -189,8 +190,9 @@ unsigned int grau(vertice v, int direcao, grafo g){
 // um conjunto C de vértices de um grafo é uma clique em g 
 // se todo vértice em C é vizinho de todos os outros vértices de C em g
 
-int clique(lista l, grafo g){
-return 1;
+int clique(lista l, grafo g) {
+	
+	return 1;
 }
 
 
@@ -200,8 +202,8 @@ return 1;
 //
 // um vértice é simplicial no grafo se sua vizinhança é uma clique
 
-int simplicial(vertice v, grafo g)
-{
+int simplicial(vertice v, grafo g) {
+	
 	return 1;
 }
 
@@ -216,7 +218,8 @@ int simplicial(vertice v, grafo g)
 // tal que
 //     v_i é simplicial em G - v_1 - ... - v_{i-1}
 
-int cordal(grafo g){
-return 1;
+int cordal(grafo g) {
+
+	return 1;
 }
 
