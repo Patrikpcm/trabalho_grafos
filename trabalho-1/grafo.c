@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <cgraph.h>
+#include <graphviz/cgraph.h>
 #include "grafo.h"
 
 //------------------------------------------------------------------------------
@@ -108,7 +108,14 @@ char *nome_vertice(vertice v) {
 
 grafo le_grafo(FILE *input) {
 
-	return NULL;
+	grafo g = NULL;
+	
+	if (!input){
+		return NULL;
+	}
+	else { 
+		return g;
+	}
 }  
 
 //------------------------------------------------------------------------------
@@ -122,7 +129,12 @@ grafo le_grafo(FILE *input) {
 
 int destroi_grafo(void *g) {
 
-	return 1;
+	if (g) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -138,7 +150,12 @@ int destroi_grafo(void *g) {
 
 grafo escreve_grafo(FILE *output, grafo g) {
 	
-	return NULL;
+	if( !output ) {
+		return NULL;
+	}
+	else {
+		return g;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -146,7 +163,12 @@ grafo escreve_grafo(FILE *output, grafo g) {
 
 grafo copia_grafo(grafo g) {
 	
-	return g;
+	if( g ) {
+		return g;
+	}
+	else {
+		return NULL;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -163,7 +185,14 @@ grafo copia_grafo(grafo g) {
 
 lista vizinhanca(vertice v, int direcao, grafo g) {
 
-	return NULL;
+	lista l = NULL;
+	
+	if ( g && v && direcao ){
+		return NULL;
+	}
+	else {
+		return l;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -180,7 +209,12 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 
 unsigned int grau(vertice v, int direcao, grafo g) {
 	
-	return v.grau;
+	if ( g && v && direcao ){
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -192,7 +226,12 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 
 int clique(lista l, grafo g) {
 	
-	return 1;
+	if( g && l ){
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 
@@ -204,7 +243,12 @@ int clique(lista l, grafo g) {
 
 int simplicial(vertice v, grafo g) {
 	
-	return 1;
+	if( g && v ) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -220,6 +264,11 @@ int simplicial(vertice v, grafo g) {
 
 int cordal(grafo g) {
 
-	return 1;
+	if( g ){
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
