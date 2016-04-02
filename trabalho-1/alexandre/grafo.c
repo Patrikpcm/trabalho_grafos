@@ -3,6 +3,8 @@
 #include <graphviz/cgraph.h>
 #include "grafo.h"
 
+typedef struct aresta *aresta;
+
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados para representar um grafo
 // 
@@ -26,16 +28,18 @@ struct grafo {
 	unsigned int n_arestas;
 };
 
-//------------------------------------------------------------------------------
-// (apontador para) estrutura de dados que representa um vértice do grafo
-// 
-// cada vértice tem um nome que é uma "string"
-
 struct vertice {
 
 	char *nome;
 	lista vizinhos_saida;
 	lista vizinhos_entrada;
+};
+
+struct aresta {
+	
+	vertice  origem;
+	vertice  destino;
+	long int peso;
 };
 
 //------------------------------------------------------------------------------
@@ -107,14 +111,23 @@ char *nome_vertice(vertice v) {
 
 grafo le_grafo(FILE *input) {
 
-	grafo g = NULL;
-	
-	if (!input){
-		return NULL;
-	}
-	else { 
-		return g;
-	}
+    Agraph_t *ag = agread(input, 0);
+    if(!(ag && agisstrict(ag))) 
+        return NULL;
+
+    grafo g = malloc(sizeof(grafo));
+    if( !g ) return NULL;
+
+    g->nome        = agnameof(ag);
+    g->direcionado = agisdirected(ag);
+    g->n_vertices  = (unsigned int)agnnodes(ag);
+    g->n_arestas   = (unsigned int)agnedges(ag);
+
+
+
+	if (!input)
+		 return NULL;
+	else return g;
 }  
 
 //------------------------------------------------------------------------------
@@ -128,12 +141,10 @@ grafo le_grafo(FILE *input) {
 
 int destroi_grafo(void *g) {
 
-	if (g) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+	if (g) 
+		 return 1;
+	else return 0;
+
 }
 
 //------------------------------------------------------------------------------
@@ -150,14 +161,14 @@ int destroi_grafo(void *g) {
 grafo escreve_grafo(FILE *output, grafo g) {
 	
 	
-    int i,j;
+//    int i,j;
 
     if(!(g && output)) return NULL;
-    
+/*    
     printf("strict %sgraph \"%s\" {\n\n", g->direcionado ? "di" : "", g->nome);
     
     // Imprime vertices
-    for(i=0; i < g->n_vert; i++){
+    for(i=0; i < g->n_vertices; i++){
         printf("    \"%s\"\n", g->l_vert[i]);
     }
     printf("\n");
@@ -172,7 +183,7 @@ grafo escreve_grafo(FILE *output, grafo g) {
     }
 
     printf("}\n");
-
+*/
     return g;
 }
 
@@ -181,12 +192,10 @@ grafo escreve_grafo(FILE *output, grafo g) {
 
 grafo copia_grafo(grafo g) {
 	
-	if( g ) {
-		return g;
-	}
-	else {
-		return NULL;
-	}
+	if( g ) 
+		 return g;
+	else return NULL;
+
 }
 
 //------------------------------------------------------------------------------
@@ -205,12 +214,10 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 
 	lista l = NULL;
 	
-	if ( g && v && direcao ){
-		return NULL;
-	}
-	else {
-		return l;
-	}
+	if ( g && v && direcao )
+		 return NULL;
+	else return l;
+
 }
 
 //------------------------------------------------------------------------------
@@ -227,12 +234,9 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 
 unsigned int grau(vertice v, int direcao, grafo g) {
 	
-	if ( g && v && direcao ){
-		return 1;
-	}
-	else {
-		return 0;
-	}
+	if ( g && v && direcao )
+		 return 1;
+	else return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -244,12 +248,10 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 
 int clique(lista l, grafo g) {
 	
-	if( g && l ){
-		return 1;
-	}
-	else {
-		return 0;
-	}
+	if( g && l )
+		 return 1;
+	else return 0;
+
 }
 
 
@@ -261,12 +263,9 @@ int clique(lista l, grafo g) {
 
 int simplicial(vertice v, grafo g) {
 	
-	if( g && v ) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+	if( g && v ) 
+		 return 1;
+	else return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -282,11 +281,8 @@ int simplicial(vertice v, grafo g) {
 
 int cordal(grafo g) {
 
-	if( g ){
-		return 1;
-	}
-	else {
-		return 0;
-	}
+	if( g )
+		 return 1;
+	else return 0;
 }
 
