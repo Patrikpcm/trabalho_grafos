@@ -1,7 +1,8 @@
-#include <stdlib.h>
+#ifndef _GRAFO_H
+#define _GRAFO_H
+
 #include <stdio.h>
-#include <graphviz/cgraph.h>
-#include "grafo.h"
+#include "lista.h"
 
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados para representar um grafo
@@ -16,77 +17,46 @@
 // 
 // o peso default de uma aresta é 0
 
-struct grafo {
+typedef struct grafo *grafo;
 
-	char        *nome;
-	lista		 vertices;
-	int          direcionado;
-	int          ponderado;
-	unsigned int n_vertices;
-	unsigned int n_arestas;
-};
+//------------------------------------------------------------------------------
+// devolve o nome do grafo g
+
+char *nome_grafo(grafo g);
+
+//------------------------------------------------------------------------------
+// devolve 1, se g é direcionado, ou
+//         0, caso contrário
+
+int direcionado(grafo g);
+
+//------------------------------------------------------------------------------
+// devolve 1, se g tem pesos nas arestas/arcos,
+//      ou 0, caso contrário
+
+int ponderado(grafo g);
+
+//------------------------------------------------------------------------------
+// devolve o número de vértices do grafo g
+
+unsigned int n_vertices(grafo g);
+
+//------------------------------------------------------------------------------
+// devolve o número de arestas/arcos do grafo g
+
+unsigned int n_arestas(grafo g);
 
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados que representa um vértice do grafo
 // 
 // cada vértice tem um nome que é uma "string"
 
-struct vertice {
-
-	char *nome;
-	lista vizinhos_saida;
-	lista vizinhos_entrada;
-};
-
-//------------------------------------------------------------------------------
-// devolve o nome do grafo g
-
-char *nome_grafo(grafo g) {
-
-	return g->nome;
-}
-
-//------------------------------------------------------------------------------
-// devolve 1, se g é direcionado, ou
-//         0, caso contrário
-
-int direcionado(grafo g) {
-
-	return g->direcionado;
-}
-
-//------------------------------------------------------------------------------
-// devolve 1, se g tem pesos nas arestas/arcos,
-//      ou 0, caso contrário
-
-int ponderado(grafo g) {
-
-	return g->ponderado;
-}
-
-//------------------------------------------------------------------------------
-// devolve o número de vértices do grafo g
-
-unsigned int n_vertices(grafo g) {
-
-	return g->n_vertices;
-}
-
-//------------------------------------------------------------------------------
-// devolve o número de arestas/arcos do grafo g
-
-unsigned int n_arestas(grafo g) {
-
-	return g->n_arestas;
-}
+typedef struct vertice *vertice;
 
 //------------------------------------------------------------------------------
 // devolve o nome do vertice v
 
-char *nome_vertice(vertice v) {
-
-	return v->nome;
-}
+char *nome_vertice(vertice v);
 
 //------------------------------------------------------------------------------
 // lê um grafo no formato dot de input, usando as rotinas de libcgraph
@@ -105,17 +75,7 @@ char *nome_vertice(vertice v) {
 // devolve o grafo lido ou
 //         NULL em caso de erro 
 
-grafo le_grafo(FILE *input) {
-
-	grafo g = NULL;
-	
-	if (!input){
-		return NULL;
-	}
-	else { 
-		return g;
-	}
-}  
+grafo le_grafo(FILE *input);  
 
 //------------------------------------------------------------------------------
 // desaloca toda a memória usada em *g
@@ -126,15 +86,7 @@ grafo le_grafo(FILE *input) {
 // g é um (void *) para que destroi_grafo() possa ser usada como argumento de
 // destroi_lista()
 
-int destroi_grafo(void *g) {
-
-	if (g) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
-}
+int destroi_grafo(void *g);
 
 //------------------------------------------------------------------------------
 // escreve o grafo g em output usando o formato dot, de forma que
@@ -147,52 +99,26 @@ int destroi_grafo(void *g) {
 // devolve o grafo escrito ou
 //         NULL em caso de erro 
 
-grafo escreve_grafo(FILE *output, grafo g) {
-	
-	if( !output ) {
-		return NULL;
-	}
-	else {
-		return g;
-	}
-}
+grafo escreve_grafo(FILE *output, grafo g);
 
 //------------------------------------------------------------------------------
 // devolve um grafo igual a g
 
-grafo copia_grafo(grafo g) {
-	
-	if( g ) {
-		return g;
-	}
-	else {
-		return NULL;
-	}
-}
+grafo copia_grafo(grafo g);
 
 //------------------------------------------------------------------------------
 // devolve a vizinhança do vértice v no grafo g
 // 
-// se direcao ==  0, v é um vértice de um grafo não direcionado
-//                   e a função devolve sua vizinhanca 
+// se direcao == 0, v é um vértice de um grafo não direcionado
+//                  e a função devolve sua vizinhanca 
 //
 // se direcao == -1, v é um vértice de um grafo direcionado e a função
 //                   devolve sua vizinhanca de entrada
 //
-// se direcao ==  1, v é um vértice de um grafo direcionado e a função
-//                   devolve sua vizinhanca de saída
+// se direcao == 1, v é um vértice de um grafo direcionado e a função
+//                  devolve sua vizinhanca de saída
 
-lista vizinhanca(vertice v, int direcao, grafo g) {
-
-	lista l = NULL;
-	
-	if ( g && v && direcao ){
-		return NULL;
-	}
-	else {
-		return l;
-	}
-}
+lista vizinhanca(vertice v, int direcao, grafo g);
 
 //------------------------------------------------------------------------------
 // devolve o grau do vértice v no grafo g
@@ -206,15 +132,7 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 // se direcao == 1, v é um vértice de um grafo direcionado
 //                  e a função devolve seu grau de saída
 
-unsigned int grau(vertice v, int direcao, grafo g) {
-	
-	if ( g && v && direcao ){
-		return 1;
-	}
-	else {
-		return 0;
-	}
-}
+unsigned int grau(vertice v, int direcao, grafo g);
 
 //------------------------------------------------------------------------------
 // devolve 1, se o conjunto dos vertices em l é uma clique em g, ou
@@ -223,16 +141,7 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 // um conjunto C de vértices de um grafo é uma clique em g 
 // se todo vértice em C é vizinho de todos os outros vértices de C em g
 
-int clique(lista l, grafo g) {
-	
-	if( g && l ){
-		return 1;
-	}
-	else {
-		return 0;
-	}
-}
-
+int clique(lista l, grafo g);
 
 //------------------------------------------------------------------------------
 // devolve 1, se v é um vértice simplicial em g, ou
@@ -240,15 +149,7 @@ int clique(lista l, grafo g) {
 //
 // um vértice é simplicial no grafo se sua vizinhança é uma clique
 
-int simplicial(vertice v, grafo g) {
-	
-	if( g && v ) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
-}
+int simplicial(vertice v, grafo g);
 
 //------------------------------------------------------------------------------
 // devolve 1, se g é um grafo cordal ou
@@ -261,13 +162,5 @@ int simplicial(vertice v, grafo g) {
 // tal que
 //     v_i é simplicial em G - v_1 - ... - v_{i-1}
 
-int cordal(grafo g) {
-
-	if( g ){
-		return 1;
-	}
-	else {
-		return 0;
-	}
-}
-
+int cordal(grafo g);
+#endif
