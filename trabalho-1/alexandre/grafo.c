@@ -115,7 +115,7 @@ grafo le_grafo(FILE *input) {
     if(!(ag && agisstrict(ag))) 
         return NULL;
 
-    grafo g = malloc(sizeof(grafo));
+    struct grafo *g = malloc(sizeof(struct grafo *));
     if( !g ) return NULL;
 
     g->nome        = agnameof(ag);
@@ -124,10 +124,76 @@ grafo le_grafo(FILE *input) {
     g->n_arestas   = (unsigned int)agnedges(ag);
 
 
+	int    i = 0;
+	int    j = 0;
+	double peso;
 
-	if (!input)
-		 return NULL;
-	else return g;
+
+    for(Agnode_t *v=agfstnode(ag); v; v=agnxtnode(ag,v)){
+//        g->l_vert[i] = agnameof(v); i+=1;
+		  printf("%s\n", agnameof(v));
+
+        // Grafos direcionados //
+        if( g->direcionado ){
+            for(Agedge_t *a=agfstout(ag,v); a; a=agnxtout(ag,a)){
+
+				printf("%s", agnameof(agtail(a)));
+				printf("%s", " ---> ");
+				printf("%s\n", agnameof(aghead(a)));
+
+/*
+                g->l_tail[j] = agnameof(agtail(a));
+                g->l_head[j] = agnameof(aghead(a));
+                w = agget(a,(char*)"peso");
+                g->l_peso[j] = w ? strtod(w,NULL) : 0.0;
+                j+=1;
+*/
+            }
+        }
+        // Grafos nao direcionados //
+        else{
+            for(Agedge_t *a=agfstedge(ag,v); a; a=agnxtedge(ag,a,v)){
+
+
+				printf("%s", agnameof(agtail(a)));
+				printf("%s", " ---> ");
+				printf("%s\n", agnameof(aghead(a)));
+
+
+/*
+                // Evita que uma aresta ja visitada seja guardada
+                inlst=0;                
+                for(k=0; k < avn; k++){
+                    if(ageqedge(a, avl[k])){
+                        inlst=1;                        
+                        break;
+                    }
+                }
+                
+                if( !inlst ){
+                    g->l_tail[j] = agnameof(agtail(a));
+                    g->l_head[j] = agnameof(aghead(a));
+                    w = agget(a,(char*)"peso");
+                    g->l_peso[j] = w ? strtod(w,NULL) : 0.0;
+                    // Guarda aresta visitada numa lista
+                    avl[avn]=a;
+                    avn+=1;   
+                    j+=1;
+                }
+*/
+                
+            }
+        }
+    }
+
+
+
+
+	return g;
+	
+//	if (!input)
+//		 return NULL;
+//	else return g;
 }  
 
 //------------------------------------------------------------------------------
@@ -140,6 +206,7 @@ grafo le_grafo(FILE *input) {
 // destroi_lista()
 
 int destroi_grafo(void *g) {
+
 
 	if (g) 
 		 return 1;
