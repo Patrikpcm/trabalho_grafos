@@ -16,23 +16,34 @@
 // 
 // o peso default de uma aresta é 0
 
-typedef struct grafo {
+struct grafo {
 
+	char        *nome;
+	lista		 vertices;
 	int          direcionado;
 	int          ponderado;
 	unsigned int n_vertices;
 	unsigned int n_arestas;
-	char        *nome_grafo;
-	vertice     *vertices;
+};
 
-}*grafo;
+//------------------------------------------------------------------------------
+// (apontador para) estrutura de dados que representa um vértice do grafo
+// 
+// cada vértice tem um nome que é uma "string"
+
+struct vertice {
+
+	char *nome;
+	lista vizinhos_saida;
+	lista vizinhos_entrada;
+};
 
 //------------------------------------------------------------------------------
 // devolve o nome do grafo g
 
 char *nome_grafo(grafo g) {
 
-	return g->nome_grafo;
+	return g->nome;
 }
 
 //------------------------------------------------------------------------------
@@ -68,18 +79,6 @@ unsigned int n_arestas(grafo g) {
 
 	return g->n_arestas;
 }
-
-//------------------------------------------------------------------------------
-// (apontador para) estrutura de dados que representa um vértice do grafo
-// 
-// cada vértice tem um nome que é uma "string"
-
-typedef struct vertice {
-
-	char *nome;
-	lista arestas;
-
-}*vertice;
 
 //------------------------------------------------------------------------------
 // devolve o nome do vertice v

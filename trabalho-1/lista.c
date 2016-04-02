@@ -15,7 +15,7 @@ struct no {
 struct lista {
   
   unsigned int tamanho;
-  no primeiro;
+  no           primeiro;
 };
 //---------------------------------------------------------------------------
 // devolve o número de nós da lista l
