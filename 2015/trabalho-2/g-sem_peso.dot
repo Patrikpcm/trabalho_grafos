@@ -1,0 +1,23 @@
+strict graph "testgraph"{
+
+   S -- B
+   S -- C
+   B -- S
+   B -- C
+   B -- D
+   C -- S
+   C -- B
+   C -- D
+   C -- E
+   D -- B
+   D -- C
+   D -- E
+   D -- T
+   E -- C
+   E -- D
+   E -- T
+   T -- D
+   T -- E
+#  X -- Y
+}
+
