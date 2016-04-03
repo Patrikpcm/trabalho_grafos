@@ -16,7 +16,7 @@ typedef struct aresta *aresta;
 // 
 // num grafo com pesos nas arestas todas as arestas tem peso, que é um long int
 // 
-// o peso default de uma aresta é 0
+// o peso default de uma aresta é 000
 
 struct grafo {
 
