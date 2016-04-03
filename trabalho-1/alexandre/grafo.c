@@ -1,9 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <graphviz/cgraph.h>
 #include "grafo.h"
 
 typedef struct aresta *aresta;
+
+aresta cria_aresta( Agedge_t *e );
 
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados para representar um grafo
@@ -28,19 +31,39 @@ struct grafo {
 	unsigned int n_arestas;
 };
 
+//------------------------------------------------------------------------------
+
 struct vertice {
 
 	char *nome;
-	lista vizinhos_saida;
-	lista vizinhos_entrada;
+	int	  grau_saida;
+	int   grau_entrada;
+	lista arestas_saida;
+	lista arestas_entrada;
 };
+
+//------------------------------------------------------------------------------
 
 struct aresta {
 	
-	vertice  origem;
-	vertice  destino;
 	long int peso;
+	char    *origem;
+	char    *destino;
 };
+
+//------------------------------------------------------------------------------
+// Devolve uma estrutura de aresta a partir de uma aresta da biblioteca cgraph
+
+aresta cria_aresta( Agedge_t *e ){
+
+	char *peso;
+	aresta a   = malloc(sizeof(struct aresta));
+	a->origem  = agnameof(agtail(e));
+	a->destino = agnameof(aghead(e));
+	peso        = agget(e,(char*)"peso");
+	a->peso    = peso ? strtol(peso,NULL,10) : 0;
+	return a;
+}
 
 //------------------------------------------------------------------------------
 // devolve o nome do grafo g
@@ -105,8 +128,6 @@ char *nome_vertice(vertice v) {
 
 grafo le_grafo(FILE *input) {
 
-	int i=0, j=0;
-	
     Agraph_t *ag = agread(input, 0);
     if(!(ag && agisstrict(ag))) 
         return NULL;
@@ -120,70 +141,44 @@ grafo le_grafo(FILE *input) {
     g->n_vertices  = (unsigned int)agnnodes(ag);
     g->n_arestas   = (unsigned int)agnedges(ag);
 
-	for(Agnode_t *v=agfstnode(ag); v; v=agnxtnode(ag,v)){
-		
-		vertice vert = malloc(sizeof(struct vertice));
-		vert->nome   = agnameof(v);
-		vert->vizinhos_saida = constroi_lista();
-		if( g->direcionado )
-			 vert->vizinhos_entrada = constroi_lista();
-		else vert->vizinhos_entrada = NULL;
-		insere_lista(vert, g->vertices);
+	for( Agnode_t *v=agfstnode(ag); v; v=agnxtnode(ag,v) ){
 
-        // Grafos direcionados //
-        if( g->direcionado ){
-            for(Agedge_t *a=agfstout(ag,v); a; a=agnxtout(ag,a)){
+		vertice vt = malloc(sizeof(struct vertice));
+		vt->nome   = agnameof(v);
+		vt->arestas_saida = constroi_lista();
 
-				i++;
+		if( g->direcionado ) {
+			vt->grau_saida      = agdegree(ag,v,FALSE,TRUE);
+			vt->grau_entrada    = agdegree(ag,v,TRUE,FALSE);
+			vt->arestas_entrada = constroi_lista();
+			
+			for( Agedge_t *e = agfstout(ag,v); e; e = agnxtout(ag,e) ){
+				aresta at = cria_aresta(e);
+				insere_lista(at, vt->arestas_saida);
+			}
+			for( Agedge_t *e = agfstin(ag,v); e; e = agnxtin(ag,e) ){
+				aresta at = cria_aresta(e);
+				insere_lista(at, vt->arestas_entrada);
+			}
+		}
+		else {
+			vt->grau_saida      = agcountuniqedges(ag,v,TRUE,TRUE);
+			vt->grau_entrada    = -1;
+			vt->arestas_entrada = NULL;
+			
+			for( Agedge_t *e = agfstedge(ag,v); e; e = agnxtedge(ag,e,v) ){
+				aresta at = cria_aresta(e); 
+				if( !strcmp( vt->nome, at->origem ) )
+					 insere_lista(at, vt->arestas_saida);
+				else free(at);
+			}
+		}
 
-//				printf("%s",   agnameof(agtail(a)));
-//				printf("%s", " --> ");
-//				printf("%s\n", agnameof(aghead(a)));
-/*
-                g->l_tail[j] = agnameof(agtail(a));
-                g->l_head[j] = agnameof(aghead(a));
-                w = agget(a,(char*)"peso");
-                g->l_peso[j] = w ? strtod(w,NULL) : 0.0;
-                j+=1;
-*/
-            }
-        }
-        // Grafos nao direcionados //
-        else{
-            for(Agedge_t *a=agfstedge(ag,v); a; a=agnxtedge(ag,a,v)){
+		insere_lista(vt, g->vertices);
+	}
 
-				j++;
-
-//				printf("%s",   agnameof(agtail(a)));
-//				printf("%s", " --- ");
-//				printf("%s\n", agnameof(aghead(a)));
-/*
-                // Evita que uma aresta ja visitada seja guardada
-                inlst=0;                
-                for(k=0; k < avn; k++){
-                    if(ageqedge(a, avl[k])){
-                        inlst=1;                        
-                        break;
-                    }
-                }
-                
-                if( !inlst ){
-                    g->l_tail[j] = agnameof(agtail(a));
-                    g->l_head[j] = agnameof(aghead(a));
-                    w = agget(a,(char*)"peso");
-                    g->l_peso[j] = w ? strtod(w,NULL) : 0.0;
-                    // Guarda aresta visitada numa lista
-                    avl[avn]=a;
-                    avn+=1;   
-                    j+=1;
-                }
-*/   
-            }
-        }
-    }
-
-//	printf("Tam Lista: %d\n", tamanho_lista(g->vertices));
-
+	if( agclose(ag) ) 
+		return NULL;
 	return g;	
 }  
 
@@ -216,30 +211,38 @@ grafo escreve_grafo(FILE *output, grafo g) {
 		
 	if(!(g && output)) return NULL;
     
+	vertice v;
+	aresta  a;
+	no nv, na;
+
     printf("strict %sgraph \"%s\" {\n\n", g->direcionado ? "di" : "", g->nome);
     
     // Imprime vertices
-	vertice v;
-	no n = primeiro_no(g->vertices);
-
-	while( n != NULL ){
-		v = conteudo(n);
+	
+	nv = primeiro_no(g->vertices);
+	while( nv != NULL ){
+		v = conteudo(nv);
 		printf("    \"%s\"\n", v->nome);
-		n = proximo_no(n);
+		nv = proximo_no(nv);
 	}
 	printf("\n");
 
-
     // Imprime arestas
-//	const char *dir = g->direcionado ? "->" : "--";
 
-/*
-    for(j=0; j < g->n_ares; j++){
-        printf("    \"%s\" %s \"%s\"", g->l_tail[j], dir, g->l_head[j]);
-        if(g->l_peso[j] > 0.0) printf(" [peso=%f]", g->l_peso[j]);
-        printf("\n");
-    }
-*/
+	const char *dir = g->direcionado ? "->" : "--";
+	nv = primeiro_no(g->vertices);
+	while( nv != NULL ){
+		v = conteudo(nv);
+		na = primeiro_no(v->arestas_saida);
+		while( na != NULL ){
+			a = conteudo(na);
+			printf("    \"%s\" %s \"%s\"", a->origem, dir, a->destino);
+			if(a->peso > 0) printf(" [peso=%ld]", a->peso);
+			printf("\n");
+			na = proximo_no(na);
+		}
+		nv = proximo_no(nv);
+	}
     printf("}\n");
 
     return g;
@@ -267,21 +270,21 @@ grafo copia_grafo(grafo g) {
 
 lista vizinhanca(vertice v, int direcao, grafo g) {
 
-	lista l = NULL;
+	lista l = constroi_lista();
 	return ( g && v && direcao ) ? NULL : l;
 }
 
 //------------------------------------------------------------------------------
 // devolve o grau do vértice v no grafo g
 // 
-// se direcao == 0, v é um vértice de um grafo não direcionado
-//                  e a função devolve seu grau
+// se direcao ==  0, v é um vértice de um grafo não direcionado
+//                   e a função devolve seu grau
 //
 // se direcao == -1, v é um vértice de um grafo direcionado
 //                   e a função devolve seu grau de entrada
 //
-// se direcao == 1, v é um vértice de um grafo direcionado
-//                  e a função devolve seu grau de saída
+// se direcao ==  1, v é um vértice de um grafo direcionado
+//                   e a função devolve seu grau de saída
 
 unsigned int grau(vertice v, int direcao, grafo g) {
 	
