@@ -36,8 +36,6 @@ struct grafo {
 struct vertice {
 
 	char *nome;
-	int	  grau_saida;
-	int   grau_entrada;
 	lista arestas_saida;
 	lista arestas_entrada;
 };
@@ -60,7 +58,7 @@ aresta cria_aresta( Agedge_t *e ){
 	aresta a   = malloc(sizeof(struct aresta));
 	a->origem  = agnameof(agtail(e));
 	a->destino = agnameof(aghead(e));
-	peso        = agget(e,(char*)"peso");
+	peso       = agget(e,(char*)"peso");
 	a->peso    = peso ? strtol(peso,NULL,10) : 0;
 	return a;
 }
@@ -140,6 +138,7 @@ grafo le_grafo(FILE *input) {
     g->direcionado = agisdirected(ag);
     g->n_vertices  = (unsigned int)agnnodes(ag);
     g->n_arestas   = (unsigned int)agnedges(ag);
+    g->ponderado   = 0;
 
 	for( Agnode_t *v=agfstnode(ag); v; v=agnxtnode(ag,v) ){
 
@@ -148,26 +147,27 @@ grafo le_grafo(FILE *input) {
 		vt->arestas_saida = constroi_lista();
 
 		if( g->direcionado ) {
-			vt->grau_saida      = agdegree(ag,v,FALSE,TRUE);
-			vt->grau_entrada    = agdegree(ag,v,TRUE,FALSE);
+
 			vt->arestas_entrada = constroi_lista();
 			
 			for( Agedge_t *e = agfstout(ag,v); e; e = agnxtout(ag,e) ){
 				aresta at = cria_aresta(e);
+				if( at->peso != 0 ) g->ponderado = 1;
 				insere_lista(at, vt->arestas_saida);
 			}
 			for( Agedge_t *e = agfstin(ag,v); e; e = agnxtin(ag,e) ){
 				aresta at = cria_aresta(e);
+				if( at->peso != 0 ) g->ponderado = 1;
 				insere_lista(at, vt->arestas_entrada);
 			}
 		}
 		else {
-			vt->grau_saida      = agcountuniqedges(ag,v,TRUE,TRUE);
-			vt->grau_entrada    = -1;
+
 			vt->arestas_entrada = NULL;
 			
 			for( Agedge_t *e = agfstedge(ag,v); e; e = agnxtedge(ag,e,v) ){
-				aresta at = cria_aresta(e); 
+				aresta at = cria_aresta(e);
+				if( at->peso != 0 ) g->ponderado = 1;
 				if( !strcmp( vt->nome, at->origem ) )
 					 insere_lista(at, vt->arestas_saida);
 				else free(at);
@@ -288,7 +288,14 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 
 unsigned int grau(vertice v, int direcao, grafo g) {
 	
-	return ( g && v && direcao ) ? 1 : 0;
+	if( !g ) return 0;
+	
+	switch( direcao ){
+		case  0 : return tamanho_lista(v->arestas_saida);
+		case  1 : return tamanho_lista(v->arestas_saida);
+		case -1 : return tamanho_lista(v->arestas_entrada);
+	}
+	return 0;	// evita warning
 }
 
 //------------------------------------------------------------------------------
