@@ -7,7 +7,7 @@
 struct no {
 
   void *conteudo;
-  no proximo;
+  no    proximo;
 };
 //---------------------------------------------------------------------------
 // lista encadeada
@@ -15,31 +15,39 @@ struct no {
 struct lista {
   
   unsigned int tamanho;
-  int padding; // só pra evitar warning 
-  no primeiro;
+  int          padding; // só pra evitar warning 
+  no           primeiro;
 };
 //---------------------------------------------------------------------------
 // devolve o número de nós da lista l
 
-unsigned int tamanho_lista(lista l) { return l->tamanho; }
+unsigned int tamanho_lista(lista l) { 
+	return l->tamanho; 
+}
 
 //---------------------------------------------------------------------------
 // devolve o primeiro nó da lista l,
 //      ou NULL, se l é vazia
 
-no primeiro_no(lista l) { return l->primeiro; }
+no primeiro_no(lista l) { 
+	return l->primeiro; 
+}
 
 //---------------------------------------------------------------------------
 // devolve o conteúdo do nó n
 //      ou NULL se n = NULL 
 
-void *conteudo(no n) { return n->conteudo; }
+void *conteudo(no n) { 
+	return n->conteudo; 
+}
 
 //---------------------------------------------------------------------------
 // devolve o sucessor do nó n,
 //      ou NULL, se n for o último nó da lista
 
-no proximo_no(no n) { return n->proximo; }
+no proximo_no(no n) { 
+	return n->proximo; 
+}
 
 //---------------------------------------------------------------------------
 // cria uma lista vazia e a devolve
@@ -54,7 +62,7 @@ lista constroi_lista(void) {
     return NULL;
 
   l->primeiro = NULL;
-  l->tamanho = 0;
+  l->tamanho  = 0;
 
   return l;
 }
@@ -72,15 +80,15 @@ lista constroi_lista(void) {
 
 int destroi_lista(lista l, int destroi(void *)) { 
   
-  no p;
-  int ok=1;
+  no  p;
+  int ok = 1;
 
   while ( (p = primeiro_no(l)) ) {
     
     l->primeiro = proximo_no(p);
 
     if ( destroi )
-      ok &= destroi(conteudo(p));
+        ok &= destroi(conteudo(p));
 
     free(p);
   }
@@ -99,8 +107,7 @@ no insere_lista(void *conteudo, lista l) {
 
   no novo = malloc(sizeof(struct no));
 
-  if ( ! novo ) 
-    return NULL;
+  if ( ! novo ) return NULL;
 
   novo->conteudo = conteudo;
   novo->proximo = primeiro_no(l);

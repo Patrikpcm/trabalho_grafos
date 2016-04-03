@@ -46,7 +46,6 @@ struct aresta {
 // devolve o nome do grafo g
 
 char *nome_grafo(grafo g) {
-
 	return g->nome;
 }
 
@@ -55,7 +54,6 @@ char *nome_grafo(grafo g) {
 //         0, caso contrário
 
 int direcionado(grafo g) {
-
 	return g->direcionado;
 }
 
@@ -64,7 +62,6 @@ int direcionado(grafo g) {
 //      ou 0, caso contrário
 
 int ponderado(grafo g) {
-
 	return g->ponderado;
 }
 
@@ -72,7 +69,6 @@ int ponderado(grafo g) {
 // devolve o número de vértices do grafo g
 
 unsigned int n_vertices(grafo g) {
-
 	return g->n_vertices;
 }
 
@@ -80,7 +76,6 @@ unsigned int n_vertices(grafo g) {
 // devolve o número de arestas/arcos do grafo g
 
 unsigned int n_arestas(grafo g) {
-
 	return g->n_arestas;
 }
 
@@ -88,7 +83,6 @@ unsigned int n_arestas(grafo g) {
 // devolve o nome do vertice v
 
 char *nome_vertice(vertice v) {
-
 	return v->nome;
 }
 
@@ -111,6 +105,8 @@ char *nome_vertice(vertice v) {
 
 grafo le_grafo(FILE *input) {
 
+	int i=0, j=0;
+	
     Agraph_t *ag = agread(input, 0);
     if(!(ag && agisstrict(ag))) 
         return NULL;
@@ -118,29 +114,31 @@ grafo le_grafo(FILE *input) {
     struct grafo *g = malloc(sizeof(struct grafo *));
     if( !g ) return NULL;
 
+	g->vertices    = constroi_lista();
     g->nome        = agnameof(ag);
     g->direcionado = agisdirected(ag);
     g->n_vertices  = (unsigned int)agnnodes(ag);
     g->n_arestas   = (unsigned int)agnedges(ag);
 
-
-	int    i = 0;
-	int    j = 0;
-	double peso;
-
-
-    for(Agnode_t *v=agfstnode(ag); v; v=agnxtnode(ag,v)){
-//        g->l_vert[i] = agnameof(v); i+=1;
-		  printf("%s\n", agnameof(v));
+	for(Agnode_t *v=agfstnode(ag); v; v=agnxtnode(ag,v)){
+		
+		vertice vert = malloc(sizeof(struct vertice));
+		vert->nome   = agnameof(v);
+		vert->vizinhos_saida = constroi_lista();
+		if( g->direcionado )
+			 vert->vizinhos_entrada = constroi_lista();
+		else vert->vizinhos_entrada = NULL;
+		insere_lista(vert, g->vertices);
 
         // Grafos direcionados //
         if( g->direcionado ){
             for(Agedge_t *a=agfstout(ag,v); a; a=agnxtout(ag,a)){
 
-				printf("%s", agnameof(agtail(a)));
-				printf("%s", " ---> ");
-				printf("%s\n", agnameof(aghead(a)));
+				i++;
 
+//				printf("%s",   agnameof(agtail(a)));
+//				printf("%s", " --> ");
+//				printf("%s\n", agnameof(aghead(a)));
 /*
                 g->l_tail[j] = agnameof(agtail(a));
                 g->l_head[j] = agnameof(aghead(a));
@@ -154,12 +152,11 @@ grafo le_grafo(FILE *input) {
         else{
             for(Agedge_t *a=agfstedge(ag,v); a; a=agnxtedge(ag,a,v)){
 
+				j++;
 
-				printf("%s", agnameof(agtail(a)));
-				printf("%s", " ---> ");
-				printf("%s\n", agnameof(aghead(a)));
-
-
+//				printf("%s",   agnameof(agtail(a)));
+//				printf("%s", " --- ");
+//				printf("%s\n", agnameof(aghead(a)));
 /*
                 // Evita que uma aresta ja visitada seja guardada
                 inlst=0;                
@@ -180,20 +177,14 @@ grafo le_grafo(FILE *input) {
                     avn+=1;   
                     j+=1;
                 }
-*/
-                
+*/   
             }
         }
     }
 
+//	printf("Tam Lista: %d\n", tamanho_lista(g->vertices));
 
-
-
-	return g;
-	
-//	if (!input)
-//		 return NULL;
-//	else return g;
+	return g;	
 }  
 
 //------------------------------------------------------------------------------
@@ -207,11 +198,7 @@ grafo le_grafo(FILE *input) {
 
 int destroi_grafo(void *g) {
 
-
-	if (g) 
-		 return 1;
-	else return 0;
-
+	return (g) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -226,31 +213,35 @@ int destroi_grafo(void *g) {
 //         NULL em caso de erro 
 
 grafo escreve_grafo(FILE *output, grafo g) {
-	
-	
-//    int i,j;
-
-    if(!(g && output)) return NULL;
-/*    
+		
+	if(!(g && output)) return NULL;
+    
     printf("strict %sgraph \"%s\" {\n\n", g->direcionado ? "di" : "", g->nome);
     
     // Imprime vertices
-    for(i=0; i < g->n_vertices; i++){
-        printf("    \"%s\"\n", g->l_vert[i]);
-    }
-    printf("\n");
+	vertice v;
+	no n = primeiro_no(g->vertices);
+
+	while( n != NULL ){
+		v = conteudo(n);
+		printf("    \"%s\"\n", v->nome);
+		n = proximo_no(n);
+	}
+	printf("\n");
 
 
     // Imprime arestas
-    const char *dir = g->eh_dir ? "->" : "--";
+//	const char *dir = g->direcionado ? "->" : "--";
+
+/*
     for(j=0; j < g->n_ares; j++){
         printf("    \"%s\" %s \"%s\"", g->l_tail[j], dir, g->l_head[j]);
         if(g->l_peso[j] > 0.0) printf(" [peso=%f]", g->l_peso[j]);
         printf("\n");
     }
-
-    printf("}\n");
 */
+    printf("}\n");
+
     return g;
 }
 
@@ -259,10 +250,7 @@ grafo escreve_grafo(FILE *output, grafo g) {
 
 grafo copia_grafo(grafo g) {
 	
-	if( g ) 
-		 return g;
-	else return NULL;
-
+	return ( g ) ? g : NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -280,11 +268,7 @@ grafo copia_grafo(grafo g) {
 lista vizinhanca(vertice v, int direcao, grafo g) {
 
 	lista l = NULL;
-	
-	if ( g && v && direcao )
-		 return NULL;
-	else return l;
-
+	return ( g && v && direcao ) ? NULL : l;
 }
 
 //------------------------------------------------------------------------------
@@ -301,9 +285,7 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 
 unsigned int grau(vertice v, int direcao, grafo g) {
 	
-	if ( g && v && direcao )
-		 return 1;
-	else return 0;
+	return ( g && v && direcao ) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -315,10 +297,7 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 
 int clique(lista l, grafo g) {
 	
-	if( g && l )
-		 return 1;
-	else return 0;
-
+	return ( g && l ) ? 1 : 0;
 }
 
 
@@ -330,9 +309,7 @@ int clique(lista l, grafo g) {
 
 int simplicial(vertice v, grafo g) {
 	
-	if( g && v ) 
-		 return 1;
-	else return 0;
+	return ( g && v ) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -348,8 +325,6 @@ int simplicial(vertice v, grafo g) {
 
 int cordal(grafo g) {
 
-	if( g )
-		 return 1;
-	else return 0;
+	return ( g ) ? 1 : 0;
 }
 
