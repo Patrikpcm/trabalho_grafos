@@ -3,6 +3,7 @@
 #include <string.h>
 #include <graphviz/cgraph.h>
 #include "grafo.h"
+#include "lista.h"
 
 typedef struct aresta *aresta;
 
@@ -194,13 +195,7 @@ int destroi_grafo(void *g) {
 
 	return (g) ? 1 : 0;
 }
-void escrevenos(grafo g)
-{
-	for(no k=primeiro_no(g->vertices);k;k=proximo_no(k)){
-			vertice v= conteudo(k);
-			printf("%s \n",v->nome);
-		}
-}
+
 //------------------------------------------------------------------------------
 // escreve o grafo g em output usando o formato dot, de forma que
 // 
@@ -275,18 +270,22 @@ grafo copia_grafo(grafo g) {
 
 lista vizinhanca(vertice v, int direcao, grafo g) {
 
+	lista la, lv = constroi_lista();
+	if( !g ) return lv;
+
+	switch( direcao ){
+		case  0 : la = v->arestas_saida;   break;
+		case  1 : la = v->arestas_saida;   break;
+		case -1 : la = v->arestas_entrada; break;
+	}
 	
-	
-	if(direcao==0){
-		return v->arestas_saida;		
+	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
+		aresta  a = conteudo(n);
+		vertice x = busca_vertice(g->vertices, a->destino);
+		if( x ) insere_lista(x,lv);
 	}
-	if(direcao ==-1){
-		return v->arestas_entrada;
-	}
-	if(direcao==1){
-		return v->arestas_saida;
-	}
-	return NULL ;
+
+	return lv;
 }
 
 //------------------------------------------------------------------------------
@@ -316,14 +315,30 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 
 //retorna o vertice do grafo
 
-vertice buscaVertice(void *nomeVertice,grafo g){
-	for(no n=primeiro_no(g->vertices);n;n=proximo_no(n)){
-		vertice aux= conteudo(n);
-		if(strcmp(nome_vertice(aux),nomeVertice)){
-			return aux;
-		}
+vertice busca_vertice(lista l, char *nome) {
+
+	if( !l )    return NULL;
+	if( !nome ) return NULL;
+
+	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
+		vertice v = conteudo(n);
+		if( ! strcmp(nome, v->nome) )
+			return v;
 	}
+
 	return NULL;
+}
+
+
+void escreveAresta(vertice v){
+	
+	for (no k=primeiro_no(v->arestas_saida);k;k=proximo_no(k)){
+		aresta a= conteudo(k);
+		printf("nome aresta (dest):%s \n",a->destino);
+		printf("nome aresta (origem):%s \n \n",a->origem);
+	}
+	printf("imprimido \n");
+	
 }
 
 
@@ -335,49 +350,50 @@ vertice buscaVertice(void *nomeVertice,grafo g){
 // se todo vértice em C é vizinho de todos os outros vértices de C em g
 
 int clique(lista l, grafo g) {
-	//if(g->direcionado) return 0;
-	
-	
-	//for (n=primeiro_no(l);n;n=proximo_no(n)){
-		//lista isClique = constroi_lista();
-		//lista vizinhos= constroi_lista();
-		//vertice vertAtual=buscaVertice(n->nome,g);
-		//vizinhos = vizinhanca(,0,g);
-		//for(j=primeiro_no(l);j;j=proximo_no(j)){
-			//for(k=primeiro_no(vizinhos);k;k=proximo_no(k)){
-				//if(conteudo(j)->nome==conteudo(k)->nome){
-				//insere_lista(j,isClique);
-				//}
-			//}
-		//}
+	if(g->direcionado) return 0;
+	no aux;
+	lista isClique = constroi_lista();
+	for (no n=primeiro_no(l);n;n=proximo_no(n)){
 		
-		//if(tamanho_lista(vizinhos)==tamanho_lista(isClique){
-			//for(x=primeiro_no(vizinhos);x;x=proximo_no(x)){
-				//for(y=primeiro_no(isClique);y;y=proximo_no(k)){
-					//if(conteudo(x)-Nome!=conteudo(y)){
-					//return 0;
-					//}
-			//}
-		//}
-			
-			
-		//}
-		////for(x=primeiro_no(isClique);x;x=proximo_no(x)){
-			////for(y=primeiro_no(l);y;y=proximo_no(y)){
-				////if(conteudo(x)== conteudo(y)){
-					////remove_no(
-				////}
-			////}
-		////}
+		lista vizinhos= constroi_lista();
+		vertice test= conteudo(n);
+		//vertice vertAtual=buscaVertice(nome_vertice(test),g);
+		//printf("nome vertice prin: %s \n",nome_vertice(vertAtual));
+		vizinhos = vizinhanca(vertAtual,0,g);
 		
-		
-		
-	//}
-	
-	
-	
-	
-	//return ( g && l ) ? 1 : 0;
+		for(no j=primeiro_no(l);j;j=proximo_no(j)){
+			for(no k=primeiro_no(vizinhos);k;k=proximo_no(k)){
+				vertice a= conteudo(k);
+				vertice v = conteudo(j);
+				printf("nome vertice: %s \n",nome_vertice(v));
+				printf("nome aresta (dest):%s \n",a->destino);
+				printf("nome aresta (origem):%s \n",a->origem);
+				if(!strcmp(nome_vertice(v),a->destino)){
+				aux=insere_lista(conteudo(j),isClique);
+				printf("ok  valor: %s\n",nome_vertice(v));
+				
+				break;
+				}
+			}
+		}
+	}
+			if(tamanho_lista(l)==tamanho_lista(isClique)){
+				printf("ok são iguais\n ");
+			for(no x=primeiro_no(l);x;x=proximo_no(x)){
+				for(no y=primeiro_no(isClique);y;y=proximo_no(y)){
+					vertice a1= conteudo(x);
+					vertice a2= conteudo(y);
+					printf("nome verticea1: %s \n",nome_vertice(a1));
+					printf("nome verticea2: %s \n",nome_vertice(a2));
+					if(!strcmp(nome_vertice(a1),nome_vertice(a2))){
+					printf("ok são iguais2\n ");
+					}
+				}
+			}
+			//printf("ok");
+		}
+		else{ printf("deuruim");return 0;}
+		return 1;
 }
 
 
