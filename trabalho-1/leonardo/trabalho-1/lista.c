@@ -98,7 +98,7 @@ int destroi_lista(lista l, int destroi(void *)) {
 no insere_lista(void *conteudo, lista l) { 
 
   no novo = malloc(sizeof(struct no));
-
+	
   if ( ! novo ) 
     return NULL;
 

@@ -134,6 +134,9 @@ lista vizinhanca(vertice v, int direcao, grafo g);
 
 unsigned int grau(vertice v, int direcao, grafo g);
 
+
+//busca vertice no grafo g pelo nome
+vertice buscaVertice(char *nomeVertice,grafo g);
 //------------------------------------------------------------------------------
 // devolve 1, se o conjunto dos vertices em l é uma clique em g, ou
 //         0, caso contrário
