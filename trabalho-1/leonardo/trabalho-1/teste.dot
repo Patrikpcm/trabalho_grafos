@@ -1,0 +1,15 @@
+strict graph "teste"{
+
+	a--b
+	b--c
+	c--a
+	a--d
+	b--d
+	d--c
+	e--b
+	d--e
+	a--e
+	e--c
+
+
+}
