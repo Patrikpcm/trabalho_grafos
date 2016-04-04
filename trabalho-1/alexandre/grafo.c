@@ -61,14 +61,14 @@ struct aresta {
 aresta cria_aresta( Agedge_t *e ){
 
 	char *peso;
-	char *findme = malloc(sizeof(char) * 5);
-	
+	char *findme = malloc(sizeof(char) * strlen("peso\0")+1);
 	strcpy( findme, "peso\0" );
 	aresta a   = malloc(sizeof(struct aresta));
 	a->origem  = agnameof( agtail(e) );
 	a->destino = agnameof( aghead(e) );
 	peso       = agget( e, findme );
 	a->peso    = peso ? strtol(peso,NULL,10) : 0;
+	free(findme);
 	return a;
 }
 
@@ -278,26 +278,6 @@ grafo escreve_grafo(FILE *output, grafo g) {
 		
 	if(!(g && output)) return NULL;
 	
-	
-/*/ ---------------------------------------------------------------------	
-char *cidade = malloc(sizeof(char) * strlen("CURITIBA\0")+1);
-strcpy(cidade, "CURITIBA\0");
-
-vertice v = busca_vertice(g->vertices, cidade);
-
-if(v) printf("Achou: %s\n", v->nome);
-else  printf("A busca falhou!");
-
-lista ln = vizinhanca( v, 0, g );
-
-for ( no n = primeiro_no(ln); n; n = proximo_no(n) ){
-	v = conteudo(n);
-	printf("%s\n", v->nome);
-}
-
-return g;
-// --------------------------------------------------------------------- */
-
 	vertice v;
 	aresta  a;
 	no nv, na;
