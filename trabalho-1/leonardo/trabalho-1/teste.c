@@ -24,14 +24,32 @@ int main(void) {
   printf("%s é cordal\n", cordal(g) ? "" : "não ");
 		
 		
-		
-		
-		escrevenos(g);
+	lista l= constroi_lista();
   
-  void *teste="LIMEIRA";
+  void *teste="a";
   vertice aux =buscaVertice(teste,g);
   
-  printf("achei esse: %s",nome_vertice(aux));
+  no d1=insere_lista(aux,l);
+  
+  teste="c";
+  vertice aux2 =buscaVertice(teste,g);
+  no d2=insere_lista(aux2,l);
+  
+  teste="d";
+  vertice aux3 =buscaVertice(teste,g);
+   no d3=insere_lista(aux3,l);
+   teste="e";
+  vertice aux4 =buscaVertice(teste,g);
+   no d4=insere_lista(aux4,l);
+  
+   
+  int isClique =clique(l,g);
+  
+  
+
+  
+  
+ 
 
   return ! destroi_grafo(g);
 }
