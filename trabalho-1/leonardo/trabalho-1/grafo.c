@@ -350,6 +350,8 @@ void escreveAresta(vertice v){
 // se todo vértice em C é vizinho de todos os outros vértices de C em g
 
 int clique(lista l, grafo g) {
+	
+	
 	if(g->direcionado) return 0;
 	no aux;
 	lista isClique = constroi_lista();
@@ -366,8 +368,6 @@ int clique(lista l, grafo g) {
 				vertice a= conteudo(k);
 				vertice v = conteudo(j);
 				printf("nome vertice: %s \n",nome_vertice(v));
-				printf("nome aresta (dest):%s \n",a->destino);
-				printf("nome aresta (origem):%s \n",a->origem);
 				if(!strcmp(nome_vertice(v),a->destino)){
 				aux=insere_lista(conteudo(j),isClique);
 				printf("ok  valor: %s\n",nome_vertice(v));
