@@ -12,7 +12,9 @@ int main(void) {
 	grafo ng = copia_grafo(g);
 	escreve_grafo(stdout, ng);
 
-
+//	if( destroi_grafo(ng) )
+//		 printf("Destruido!!!\n");
+//	else printf("Falhou!!!\n");
 
 //	printf("nome: %s\n", nome_grafo(g));
 //	printf("%sdirecionado\n", direcionado(g) ? "" : "não ");
@@ -23,5 +25,6 @@ int main(void) {
 
 //	escreve_grafo(stdout, g);
 
-	return ! destroi_grafo(g);
+//	return ! destroi_grafo(g);
+	return 0;
 }
