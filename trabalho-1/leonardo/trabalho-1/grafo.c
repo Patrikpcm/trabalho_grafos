@@ -108,7 +108,10 @@ unsigned int n_arestas(grafo g) {
 char *nome_vertice(vertice v) {
 	return v->nome;
 }
-
+//retorna a lista de vertices de g
+lista lista_vertices(grafo g) {
+	return g->vertices;
+}
 //------------------------------------------------------------------------------
 // lê um grafo no formato dot de input, usando as rotinas de libcgraph
 // 
@@ -330,16 +333,16 @@ vertice busca_vertice(lista l, char *nome) {
 }
 
 
-void escreveAresta(vertice v){
+//void escreveAresta(vertice v){
 	
-	for (no k=primeiro_no(v->arestas_saida);k;k=proximo_no(k)){
-		aresta a= conteudo(k);
-		printf("nome aresta (dest):%s \n",a->destino);
-		printf("nome aresta (origem):%s \n \n",a->origem);
-	}
-	printf("imprimido \n");
+	//for (no k=primeiro_no(v->arestas_saida);k;k=proximo_no(k)){
+		//aresta a= conteudo(k);
+		//printf("nome aresta (dest):%s \n",a->destino);
+		//printf("nome aresta (origem):%s \n \n",a->origem);
+	//}
+	//printf("imprimido \n");
 	
-}
+//}
 
 
 //------------------------------------------------------------------------------
@@ -359,7 +362,7 @@ int clique(lista l, grafo g) {
 		
 		lista vizinhos= constroi_lista();
 		vertice test= conteudo(n);
-		//vertice vertAtual=buscaVertice(nome_vertice(test),g);
+		vertice vertAtual=busca_vertice(g->vertices,nome_vertice(test));
 		//printf("nome vertice prin: %s \n",nome_vertice(vertAtual));
 		vizinhos = vizinhanca(vertAtual,0,g);
 		
@@ -368,7 +371,7 @@ int clique(lista l, grafo g) {
 				vertice a= conteudo(k);
 				vertice v = conteudo(j);
 				printf("nome vertice: %s \n",nome_vertice(v));
-				if(!strcmp(nome_vertice(v),a->destino)){
+				if(!strcmp(nome_vertice(v),nome_vertice(a))){
 				aux=insere_lista(conteudo(j),isClique);
 				printf("ok  valor: %s\n",nome_vertice(v));
 				

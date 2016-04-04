@@ -46,6 +46,9 @@ unsigned int n_vertices(grafo g);
 
 unsigned int n_arestas(grafo g);
 
+//retorna a lista de vertices de g
+lista lista_vertices(grafo g);
+
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados que representa um vértice do grafo
 // 
@@ -136,7 +139,7 @@ unsigned int grau(vertice v, int direcao, grafo g);
 
 
 //busca vertice no grafo g pelo nome
-vertice buscaVertice(char *nomeVertice,grafo g);
+vertice busca_vertice(lista l, char *nome);
 //------------------------------------------------------------------------------
 // devolve 1, se o conjunto dos vertices em l é uma clique em g, ou
 //         0, caso contrário

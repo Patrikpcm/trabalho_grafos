@@ -26,20 +26,20 @@ int main(void) {
 		
 	lista l= constroi_lista();
   
-  void *teste="a";
-  vertice aux =buscaVertice(teste,g);
+  char *teste="a";
+  vertice aux =busca_vertice(lista_vertices(g),teste);
   
   no d1=insere_lista(aux,l);
   
   teste="c";
-  vertice aux2 =buscaVertice(teste,g);
+  vertice aux2 =busca_vertice(lista_vertices(g),teste);
   no d2=insere_lista(aux2,l);
   
   teste="d";
-  vertice aux3 =buscaVertice(teste,g);
+  vertice aux3 =busca_vertice(lista_vertices(g),teste);
    no d3=insere_lista(aux3,l);
    teste="e";
-  vertice aux4 =buscaVertice(teste,g);
+  vertice aux4 =busca_vertice(lista_vertices(g),teste);
    no d4=insere_lista(aux4,l);
   
    
