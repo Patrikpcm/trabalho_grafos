@@ -65,6 +65,7 @@ aresta cria_aresta( Agedge_t *e ){
 	return a;
 }
 
+
 //------------------------------------------------------------------------------
 // devolve o nome do grafo g
 
@@ -194,9 +195,45 @@ grafo le_grafo(FILE *input) {
 // g é um (void *) para que destroi_grafo() possa ser usada como argumento de
 // destroi_lista()
 
-int destroi_grafo(void *g) {
 
-	return (g) ? 1 : 0;
+
+int destroi_aresta(void *ptr){
+	struct aresta *r= ptr
+	if(r){
+		free(r->peso);
+		free(r->origem);
+		free(r->destino);
+		return 1;
+	}
+	return 0;
+	
+}
+int destroi_vertice(void *ptr){
+	struct vertice *r=ptr;
+	if(r){
+		free(r->nome);
+		int i=destroi_lista(r->arestas_entrada,destroi_aresta);
+		i=destroi_lista(r->arestas_saida,destroi_aresta);
+		return i;
+	}
+	return 0;
+	
+}
+
+int destroi_grafo(void *g) {
+	struct grafo *g=ptr;
+	if(g){
+		free(g->nome);
+		free(g->direcionado);
+		free(g->ponderado);
+		free(g->n_vertices);
+		free(g->n_arestas);
+		
+		int i =destroi_lista(g->vertices,destroi_vertice);
+		
+	}
+	return 0;
+	
 }
 
 //------------------------------------------------------------------------------
