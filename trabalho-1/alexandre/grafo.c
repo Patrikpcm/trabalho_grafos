@@ -239,21 +239,31 @@ grafo le_grafo(FILE *input) {
 		vt->nome   = agnameof(v);
 		vt->arestas_saida   = constroi_lista();
 		vt->arestas_entrada = constroi_lista();
+
+		if( g-> direcionado ){
+			for( Agedge_t *e = agfstout(ag,v); e; e = agnxtout(ag,e) ){
+				aresta at = cria_aresta(e);
+				if( at->peso != 0 ) g->ponderado = 1;
+				insere_lista(at, vt->arestas_saida);
+			}
+			for( Agedge_t *e = agfstin(ag,v); e; e = agnxtin(ag,e) ){
+				aresta at = cria_aresta(e);
+				if( at->peso != 0 ) g->ponderado = 1;
+				insere_lista(at, vt->arestas_entrada);
+			}
+		}
+		else {
 	
-		for( Agedge_t *e = agfstout(ag,v); e; e = agnxtout(ag,e) ){
-			aresta at = cria_aresta(e);
-			if( at->peso != 0 ) g->ponderado = 1;
-			insere_lista(at, vt->arestas_saida);
+			for( Agedge_t *e = agfstedge(ag,v); e; e = agnxtedge(ag,e,v) ){
+				aresta at = cria_aresta(e);
+				if( at->peso != 0 ) g->ponderado = 1;
+				if( !strcmp( vt->nome, at->origem ) )
+					 insere_lista(at, vt->arestas_saida);
+			//	else insere_lista(at, vt->arestas_entrada);
+			}
+			
 		}
 
-		for( Agedge_t *e = agfstin(ag,v); e; e = agnxtin(ag,e) ){
-			aresta at = cria_aresta(e);
-			if( at->peso != 0 ) g->ponderado = 1;
-			if( g->direcionado )
-				 insere_lista(at, vt->arestas_entrada);
-			else insere_lista(at, vt->arestas_saida);
-
-		}
 		insere_lista(vt, g->vertices);
 	}
 	if( agclose(ag) ) 
