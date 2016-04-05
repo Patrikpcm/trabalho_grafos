@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "lista.h"
 #include "grafo.h"
 
 //------------------------------------------------------------------------------
@@ -9,8 +10,21 @@ int main(void) {
 
 	if ( !g ) return 1;
 
+//	escreve_grafo(stdout, g);
+
 	grafo ng = copia_grafo(g);
 	escreve_grafo(stdout, ng);
+
+/*	
+	lista lv = constroi_lista();
+	for( no nv = primeiro_no(lv); nv; nv = proximo_no(nv) )
+		insere_lista( conteudo(nv), lv );
+
+	if( clique(lv, ng) )
+		 printf("Eh Clique!!!\n");
+	else printf("Não é clique...\n");
+*/
+
 
 //	if( destroi_grafo(ng) )
 //		 printf("Destruido!!!\n");

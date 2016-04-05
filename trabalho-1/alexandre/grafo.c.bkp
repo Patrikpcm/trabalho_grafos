@@ -10,10 +10,6 @@ aresta cria_aresta( Agedge_t *e );
 
 aresta copia_aresta( aresta a );
 
-aresta busca_aresta( lista l, char *origem, char *destino );
-
-lista arestas( grafo g );
-
 vertice busca_vertice(lista l, char *nome);
 
 
@@ -78,64 +74,20 @@ aresta cria_aresta( Agedge_t *e ){
 
 
 //------------------------------------------------------------------------------
-// Cria e devolve uma estrutura de aresta a partir de uma outra aresta 
+// Cria e devolve uma estrutura de aresta 
+// a partir de uma outra aresta 
 
-aresta copia_aresta( aresta a ) {
+aresta copia_aresta( aresta a ){
 
 	aresta at = malloc(sizeof(struct aresta));
 	at->peso = a->peso;
 	at->origem = malloc(sizeof(char) * strlen(a->origem)+1);
 	strcpy(at->origem, a->origem);
 	at->destino = malloc(sizeof(char) * strlen(a->destino)+1);
-	strcpy(at->destino, a->destino);
+	strcpy(at->destino, a->destino);	
 	return at;
 }
 
-
-//------------------------------------------------------------------------------
-// Procura por uma aresta em uma lista dados os vértices de origem e destino
-// Retorna o ponteiro para a resta ou NULL caso não seja encontrada
-
-aresta busca_aresta( lista l, char *origem, char *destino ) {
-
-	if( !l ) return NULL;
-	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
-		aresta  a = conteudo(n);
-		if( !strcmp(origem,a->origem) && !strcmp(destino,a->destino) )
-		return a;
-	}
-	return NULL;
-}
-
-
-//------------------------------------------------------------------------------
-// Devolve uma lista com as arestas do grafo g 
-
-lista arestas( grafo g ) {
-	
-	lista la = constroi_lista();
-	if( !g ) return la;
-	
-	for( no nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) ){
-
-		vertice v = conteudo(nv);
-
-		for( no na = primeiro_no(v->arestas_saida); na; na = proximo_no(na) ){
-			aresta a = conteudo(na);
-			if( !busca_aresta(la, a->origem, a->destino) )
-				insere_lista( a, la );
-		}
-
-		if( g->direcionado ) {
-			for( no na = primeiro_no(v->arestas_entrada); na; na = proximo_no(na) ){
-				aresta a = conteudo(na);
-				if( !busca_aresta(la, a->origem, a->destino) )
-					insere_lista( a, la );
-			}
-		}
-	}
-	return la;
-}
 
 //------------------------------------------------------------------------------
 // Retorna apontador para o vértice com o nome dado como argumento
@@ -233,29 +185,52 @@ grafo le_grafo(FILE *input) {
     g->n_arestas   = (unsigned int)agnedges(ag);
     g->ponderado   = 0;
 
-	for( Agnode_t *v = agfstnode(ag); v; v = agnxtnode(ag,v) ){
+	for( Agnode_t *v=agfstnode(ag); v; v=agnxtnode(ag,v) ){
 
 		vertice vt = malloc(sizeof(struct vertice));
 		vt->nome   = agnameof(v);
-		vt->arestas_saida   = constroi_lista();
-		vt->arestas_entrada = constroi_lista();
-	
-		for( Agedge_t *e = agfstout(ag,v); e; e = agnxtout(ag,e) ){
-			aresta at = cria_aresta(e);
-			if( at->peso != 0 ) g->ponderado = 1;
-			insere_lista(at, vt->arestas_saida);
+		vt->arestas_saida = constroi_lista();
+
+		if( g->direcionado ) {
+
+			vt->arestas_entrada = constroi_lista();
+			
+			for( Agedge_t *e = agfstout(ag,v); e; e = agnxtout(ag,e) ){
+				aresta at = cria_aresta(e);
+				if( at->peso != 0 ) g->ponderado = 1;
+				insere_lista(at, vt->arestas_saida);
+			}
+			for( Agedge_t *e = agfstin(ag,v); e; e = agnxtin(ag,e) ){
+				aresta at = cria_aresta(e);
+				if( at->peso != 0 ) g->ponderado = 1;
+				insere_lista(at, vt->arestas_entrada);
+			}
+		}
+		else {
+
+			vt->arestas_entrada = NULL;
+			
+			for( Agedge_t *e = agfstedge(ag,v); e; e = agnxtedge(ag,e,v) ){
+				aresta at = cria_aresta(e);
+				if( at->peso != 0 ) g->ponderado = 1;
+				if( !strcmp( vt->nome, at->origem ) )
+					 insere_lista(at, vt->arestas_saida);
+				else free(at);
+			}
+			
+printf("Vizinhança de %s : ", nome_vertice(vt));
+for( no z = primeiro_no(vt->arestas_saida); z; z = proximo_no(z) ){
+aresta  y = conteudo(z);
+printf("%s ", y->destino);
+}
+printf("\n");
+
+			
 		}
 
-		for( Agedge_t *e = agfstin(ag,v); e; e = agnxtin(ag,e) ){
-			aresta at = cria_aresta(e);
-			if( at->peso != 0 ) g->ponderado = 1;
-			if( g->direcionado )
-				 insere_lista(at, vt->arestas_entrada);
-			else insere_lista(at, vt->arestas_saida);
-
-		}
 		insere_lista(vt, g->vertices);
 	}
+
 	if( agclose(ag) ) 
 		return NULL;
 	return g;	
@@ -315,7 +290,11 @@ grafo escreve_grafo(FILE *output, grafo g) {
 	vertice v;
 	aresta  a;
 	no nv, na;
-	
+/*	
+if( clique(g->vertices, g) )
+     printf("Eh Clique!\n");
+else printf("Falhou!!!\n");
+*/
     printf("strict %sgraph \"%s\" {\n\n", g->direcionado ? "di" : "", g->nome);
     
     // Imprime vertices
@@ -328,13 +307,15 @@ grafo escreve_grafo(FILE *output, grafo g) {
 
     // Imprime arestas
 
-	lista la = arestas(g);
 	const char *dir = g->direcionado ? "->" : "--";
-	for( na = primeiro_no(la); na; na = proximo_no(na) ){
-		a = conteudo(na);
-		printf("    \"%s\" %s \"%s\"", a->origem, dir, a->destino);
-		if( g->ponderado ) printf(" [peso=%ld]", a->peso);
-		printf("\n");
+	for( nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) ){
+		v = conteudo(nv);
+		for( na = primeiro_no(v->arestas_saida); na; na = proximo_no(na) ){
+			a = conteudo(na);
+			printf("    \"%s\" %s \"%s\"", a->origem, dir, a->destino);
+			if( g->ponderado ) printf(" [peso=%ld]", a->peso);
+			printf("\n");
+		}
 	}
     printf("}\n");
 
@@ -363,24 +344,21 @@ grafo copia_grafo(grafo g) {
 		v = conteudo(nv);
 		vt->nome = malloc(sizeof(char) * strlen(v->nome)+1);
 		strcpy(vt->nome, v->nome);
-//printf("VERTICE: %s\n", vt->nome);		
-		vt->arestas_saida   = constroi_lista();
-		vt->arestas_entrada = constroi_lista();
 
+		vt->arestas_saida = constroi_lista();
 		for( na = primeiro_no(v->arestas_saida); na; na = proximo_no(na) ){
 			aresta at = copia_aresta(conteudo(na));
-//printf("SAI: %s -- %s\n", at->origem, at->destino);
 			insere_lista(at, vt->arestas_saida);
 		}
 		
 		if( g->direcionado ){
+			 vt->arestas_entrada = constroi_lista();
 			 for( na = primeiro_no(v->arestas_entrada); na; na = proximo_no(na) ){
 				aresta at = copia_aresta(conteudo(na));
-//printf("ENT: %s -- %s\n", at->origem, at->destino);
 				insere_lista(at, vt->arestas_entrada);
 			 }
 		}
-//		else vt->arestas_entrada = NULL;
+		else vt->arestas_entrada = NULL;
 		
 		insere_lista(vt, ng->vertices);
 	}
@@ -418,13 +396,10 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 	
 	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
 		aresta  a = conteudo(n);
-
-		if( strcmp(nome_vertice(v),a->origem) )
-			insere_lista( busca_vertice(g->vertices,a->origem), lv );
-			
-		if( strcmp(nome_vertice(v),a->destino) )
-			insere_lista( busca_vertice(g->vertices, a->destino), lv );
+		vertice x = busca_vertice(g->vertices, a->destino);
+		if( x ) insere_lista( x, lv );
 	}
+
 	return lv;
 }
 
@@ -469,7 +444,12 @@ int clique(lista l, grafo g) {
 	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
 		vi = conteudo(n);
 		lv = vizinhanca(vi,0,g);
-
+/*
+printf("Vizinhança de %s : ", nome_vertice(vi));
+for( no z = primeiro_no(lv); z; z = proximo_no(z) )
+printf("%s ", nome_vertice(conteudo(z)));
+printf("\n");
+*/
 		for( no m = proximo_no(n); m; m = proximo_no(m) ){
 			vx = conteudo(m);
 			vy = busca_vertice(lv, nome_vertice(vx));
