@@ -6,15 +6,15 @@
 
 typedef struct aresta *aresta;
 
-aresta cria_aresta( Agedge_t *e );
+static aresta cria_aresta( Agedge_t *e );
 
-aresta copia_aresta( aresta a );
+static aresta copia_aresta( aresta a );
 
-aresta busca_aresta( lista l, char *origem, char *destino );
+static aresta busca_aresta( lista l, char *origem, char *destino );
 
-lista arestas( grafo g );
+static lista arestas( grafo g );
 
-vertice busca_vertice(lista l, char *nome);
+static vertice busca_vertice(lista l, char *nome);
 
 
 //------------------------------------------------------------------------------
@@ -222,7 +222,7 @@ grafo le_grafo(FILE *input) {
     if(!(ag && agisstrict(ag))) 
         return NULL;
 
-    struct grafo *g = malloc(sizeof(struct grafo *));
+    struct grafo *g = malloc(sizeof(struct grafo));
     if( !g ) return NULL;
 
 	g->vertices = constroi_lista();
@@ -240,6 +240,12 @@ grafo le_grafo(FILE *input) {
 		vt->arestas_saida   = constroi_lista();
 		vt->arestas_entrada = constroi_lista();
 	
+
+		insere_lista(vt, g->vertices);
+	}
+	
+	for( Agnode_t *v = agfstnode(ag); v; v = agnxtnode(ag,v) ){
+
 		for( Agedge_t *e = agfstout(ag,v); e; e = agnxtout(ag,e) ){
 			aresta at = cria_aresta(e);
 			if( at->peso != 0 ) g->ponderado = 1;
@@ -254,8 +260,9 @@ grafo le_grafo(FILE *input) {
 			else insere_lista(at, vt->arestas_saida);
 
 		}
-		insere_lista(vt, g->vertices);
+		
 	}
+	
 	if( agclose(ag) ) 
 		return NULL;
 	return g;	
