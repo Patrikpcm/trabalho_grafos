@@ -14,7 +14,7 @@ static aresta busca_aresta( lista l, vertice origem, vertice destino );
 
 static lista arestas( grafo g );
 
-static vertice busca_vertice(lista l, char *nome);
+static vertice busca_vertice( lista l, char *nome );
 
 int destroi_aresta( void *ptr );
 
@@ -67,13 +67,12 @@ struct aresta {
 
 static aresta cria_aresta( lista lv, Agedge_t *e ){
 
-	char *peso;
 	char *findme = malloc(sizeof(char) * strlen("peso\0")+1);
 	strcpy( findme, "peso\0" );
 	aresta a   = malloc(sizeof(struct aresta));
 	a->origem  = busca_vertice(lv, agnameof(agtail(e)));
 	a->destino = busca_vertice(lv, agnameof(aghead(e)));
-	peso       = agget( e, findme );
+	char *peso = agget( e, findme );
 	a->peso    = peso ? strtol(peso,NULL,10) : 0;
 	free(findme);
 	return a;
@@ -85,13 +84,12 @@ static aresta cria_aresta( lista lv, Agedge_t *e ){
 
 static aresta copia_aresta( aresta a ) {
 
-	aresta at = malloc(sizeof(struct aresta));
+	aresta at   = malloc(sizeof(struct aresta)+1);
 	at->peso    = a->peso;
 	at->origem  = a->origem;
 	at->destino = a->destino;
 	return at;
 }
-
 
 //------------------------------------------------------------------------------
 // Procura por uma aresta em uma lista dados os vértices de origem e destino
