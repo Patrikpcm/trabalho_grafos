@@ -12,18 +12,18 @@ int main(void) {
 
 //	escreve_grafo(stdout, g);
 
-	grafo ng = copia_grafo(g);
-	escreve_grafo(stdout, ng);
+//	grafo ng = copia_grafo(g);
+//	escreve_grafo(stdout, ng);
 
-/*	
+	
 	lista lv = constroi_lista();
-	for( no nv = primeiro_no(lv); nv; nv = proximo_no(nv) )
-		insere_lista( conteudo(nv), lv );
+//	for( no nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) )
+//		insere_lista( conteudo(nv), lv );
 
-	if( clique(lv, ng) )
+	if( clique(lv, g) )
 		 printf("Eh Clique!!!\n");
 	else printf("Não é clique...\n");
-*/
+
 
 
 //	if( destroi_grafo(ng) )

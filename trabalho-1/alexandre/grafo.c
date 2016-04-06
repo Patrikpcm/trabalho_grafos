@@ -83,10 +83,8 @@ aresta cria_aresta( lista lv, Agedge_t *e ){
 aresta copia_aresta( aresta a ) {
 
 	aresta at = malloc(sizeof(struct aresta));
-	at->peso = a->peso;
-	at->origem = malloc(sizeof(vertice));
-	at->origem = a->origem;
-	at->destino = malloc(sizeof(vertice));
+	at->peso    = a->peso;
+	at->origem  = a->origem;
 	at->destino = a->destino;
 	return at;
 }
@@ -359,13 +357,13 @@ grafo escreve_grafo(FILE *output, grafo g) {
 
 grafo copia_grafo(grafo g) {
 	
-	struct grafo *ng = malloc(sizeof(struct grafo *));
+	struct grafo *ng = malloc(sizeof(struct grafo));
 	if( !ng ) return NULL;
-	
+
 	vertice v;
 	no nv, na;
 	
-	ng->nome = malloc(sizeof(char) * strlen(g->nome)+1);
+	ng->nome = malloc(sizeof(char) * strlen(nome_grafo(g)+1));
 	strcpy(ng->nome, g->nome);
 	
 	ng->vertices = constroi_lista();
@@ -374,27 +372,23 @@ grafo copia_grafo(grafo g) {
 		
 		vertice vt = malloc(sizeof(struct vertice));
 		v = conteudo(nv);
-		vt->nome = malloc(sizeof(char) * strlen(v->nome)+1);
+		vt->nome = malloc(sizeof(char) * strlen(nome_vertice(v))+1);
 		strcpy(vt->nome, v->nome);
-//printf("VERTICE: %s\n", vt->nome);		
 		vt->arestas_saida   = constroi_lista();
 		vt->arestas_entrada = constroi_lista();
 
 		for( na = primeiro_no(v->arestas_saida); na; na = proximo_no(na) ){
 			aresta at = copia_aresta(conteudo(na));
-//printf("SAI: %s -- %s\n", at->origem, at->destino);
 			insere_lista(at, vt->arestas_saida);
 		}
 		
 		if( g->direcionado ){
 			 for( na = primeiro_no(v->arestas_entrada); na; na = proximo_no(na) ){
 				aresta at = copia_aresta(conteudo(na));
-//printf("ENT: %s -- %s\n", at->origem, at->destino);
 				insere_lista(at, vt->arestas_entrada);
 			 }
 		}
-//		else vt->arestas_entrada = NULL;
-		
+	
 		insere_lista(vt, ng->vertices);
 	}
 	
@@ -428,15 +422,15 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 		case  1 : la = v->arestas_saida;   break;
 		case -1 : la = v->arestas_entrada; break;
 	}
-	
 	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
 		aresta  a = conteudo(n);
 
-		if( v == a->origem )
-			insere_lista( a->origem, lv );
-			
-		if( v == a->destino )
+		if( v == a->origem ){
 			insere_lista( a->destino, lv );
+		}
+		if( v == a->destino ){
+			insere_lista( a->origem, lv );
+		}
 	}
 	return lv;
 }
@@ -473,9 +467,9 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 // se todo vértice em C é vizinho de todos os outros vértices de C em g
 
 int clique(lista l, grafo g) {
-	
+
 	if( g->direcionado ) return 0;
-	
+
 	vertice vi, vx, vy;
 	lista   lv;
 	
