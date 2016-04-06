@@ -13,7 +13,7 @@ int main(void) {
 //	escreve_grafo(stdout, g);
 
 	grafo ng = copia_grafo(g);
-	escreve_grafo(stdout, ng);
+//	escreve_grafo(stdout, ng);
 
 
 //	lista lv = constroi_lista();
@@ -22,9 +22,14 @@ int main(void) {
 //	else printf("Não é clique...\n");
 
 
-//	if( destroi_grafo(g) )
+//	if( destroi_grafo(ng) )
 //		 printf("Destruido!!!\n");
 //	else printf("Falhou!!!\n");
+
+
+//	if( simplicial(v,g) )
+//		 printf("Eh Simplicial!!!\n");
+//	else printf("Não é simplicial...\n");
 
 
 //	printf("nome: %s\n", nome_grafo(g));

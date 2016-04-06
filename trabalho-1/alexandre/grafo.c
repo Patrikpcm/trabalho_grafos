@@ -434,13 +434,14 @@ grafo copia_grafo(grafo g) {
 lista vizinhanca(vertice v, int direcao, grafo g) {
 
 	lista la, lv = constroi_lista();
-	if( !g ) return lv;
+	if( !v || !g ) return lv;
 
 	switch( direcao ){
 		case  0 : la = v->arestas_saida;   break;
 		case  1 : la = v->arestas_saida;   break;
 		case -1 : la = v->arestas_entrada; break;
 	}
+
 	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
 		aresta  a = conteudo(n);
 
@@ -513,17 +514,15 @@ int clique(lista l, grafo g) {
 // um vértice é simplicial no grafo se sua vizinhança é uma clique
 
 int simplicial(vertice v, grafo g) {
-/*
-	if( g->direcionado ) return 0;
+
+	if( !v || !g || g->direcionado )
+		return 0;
 
 	lista l = vizinhanca(v,0,g);
 
-	if( tamanho_lista(l) > 0 )
-		return clique(l,g);
-
-	return 1;
-*/
-	return ( v && g ) ? 1 : 0;
+	if( tamanho_lista(l) == 0 )
+		return 1;
+	return clique(l,g);
 }
 
 //------------------------------------------------------------------------------
