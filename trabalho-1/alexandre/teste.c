@@ -16,19 +16,16 @@ int main(void) {
 //	escreve_grafo(stdout, ng);
 
 	
-	lista lv = constroi_lista();
-//	for( no nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) )
-//		insere_lista( conteudo(nv), lv );
-
-	if( clique(lv, g) )
-		 printf("Eh Clique!!!\n");
-	else printf("Não é clique...\n");
+//	lista lv = constroi_lista();
+//	if( clique(lv, g) )
+//		 printf("Eh Clique!!!\n");
+//	else printf("Não é clique...\n");
 
 
 
-//	if( destroi_grafo(ng) )
-//		 printf("Destruido!!!\n");
-//	else printf("Falhou!!!\n");
+	if( destroi_grafo(g) )
+		 printf("Destruido!!!\n");
+	else printf("Falhou!!!\n");
 
 //	printf("nome: %s\n", nome_grafo(g));
 //	printf("%sdirecionado\n", direcionado(g) ? "" : "não ");

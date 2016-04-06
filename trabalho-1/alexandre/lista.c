@@ -1,6 +1,10 @@
 #include <malloc.h>
 #include "lista.h"
 
+int destroi_aresta( void *ptr );
+
+int destroi_vertice( void *ptr );
+
 //---------------------------------------------------------------------------
 // nó de lista encadeada cujo conteúdo é um void *
 
@@ -18,6 +22,40 @@ struct lista {
   int          padding; // só pra evitar warning 
   no           primeiro;
 };
+
+//------------------------------------------------------------------------------
+// Libera a memória ocupada por uma aresta
+
+int destroi_aresta( void *ptr ){
+	
+	struct aresta *a = ptr;
+
+	if( a ){
+		free( a );
+		return 1;
+	}
+	return 0;
+}
+
+//------------------------------------------------------------------------------
+// Libera a memória ocupada por um vértice
+
+int destroi_vertice( void *ptr ){
+	
+	struct vertice *v = ptr;
+	
+	if( v ){
+		free( v->nome );
+		int e = destroi_lista( v->arestas_entrada, destroi_aresta );
+		int s = destroi_lista( v->arestas_saida,   destroi_aresta );
+		if( e && s ) {
+			free( v );
+			return 1;
+		}
+	}
+	return 0;
+}
+
 //---------------------------------------------------------------------------
 // devolve o número de nós da lista l
 
