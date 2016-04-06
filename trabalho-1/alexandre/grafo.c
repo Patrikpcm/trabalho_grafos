@@ -538,21 +538,18 @@ int simplicial(vertice v, grafo g) {
 
 int cordal(grafo g) {
 
-/*
-	if( g->direcionado ) return 0;
+	if( !g || g->direcionado )
+		return 0;
 
 	grafo ng = copia_grafo(g);
 
-	for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
+	for( no n = primeiro_no(ng->vertices); n; n = proximo_no(n) ){
 
 		if( simplicial(conteudo(n), ng) ){
-			//remove_no( cg->vertices , x, destroi_vertice );
-			printf("Simplicial \n");
+			if( !remove_no( ng->vertices , n, destroi_vertice ) )
+				return 0;
 		}
 	}
-
-	return !tamanho_lista(ng->vertices);
-*/
-	return g ? 1 : 0;
+	return ( tamanho_lista(ng->vertices) == 0 ) ? 1 : 0;
 }
 

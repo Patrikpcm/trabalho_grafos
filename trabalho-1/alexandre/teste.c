@@ -12,7 +12,7 @@ int main(void) {
 
 //	escreve_grafo(stdout, g);
 
-	grafo ng = copia_grafo(g);
+//	grafo ng = copia_grafo(g);
 //	escreve_grafo(stdout, ng);
 
 
@@ -32,15 +32,15 @@ int main(void) {
 //	else printf("Não é simplicial...\n");
 
 
-//	printf("nome: %s\n", nome_grafo(g));
-//	printf("%sdirecionado\n", direcionado(g) ? "" : "não ");
-//	printf("%sponderado\n", ponderado(g) ? "" : "não ");
-//	printf("%d vértices\n", n_vertices(g));
-//	printf("%d arestas\n", n_arestas(g));
-//	printf("%s é cordal\n", cordal(g) ? "" : "não ");
+	printf("nome: %s\n",      nome_grafo(g));
+	printf("%sdirecionado\n", direcionado(g) ? "" : "não ");
+	printf("%sponderado\n",   ponderado(g) ? "" : "não ");
+	printf("%d vértices\n",   n_vertices(g));
+	printf("%d arestas\n",    n_arestas(g));
+	printf("%s é cordal\n",   cordal(g) ? "" : "não ");
 
 //	escreve_grafo(stdout, g);
 
-//	return ! destroi_grafo(g);
-	return 0;
+	return ! destroi_grafo(g);
+//	return 0;
 }
