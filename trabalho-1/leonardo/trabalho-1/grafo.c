@@ -444,8 +444,17 @@ int clique(lista l, grafo g) {
 // um vértice é simplicial no grafo se sua vizinhança é uma clique
 
 int simplicial(vertice v, grafo g) {
+	lista l= constroi_lista();
+	l=vizinhanca(v,0,g);
+	if(tamanho_lista(l)>0){
+		int i = clique(l,g);
+		return i;
+		
+	}
+	return 1;
 	
-	return ( g && v ) ? 1 : 0;
+	
+	
 }
 
 //------------------------------------------------------------------------------
