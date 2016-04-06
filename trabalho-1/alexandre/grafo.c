@@ -177,7 +177,6 @@ int destroi_vertice( void *ptr ){
 	struct vertice *v = ptr;
 
 	if( v ){
-		free( v->nome );
 		int e = destroi_lista( v->arestas_entrada, destroi_aresta );
 		int s = destroi_lista( v->arestas_saida,   destroi_aresta );
 		if( e && s ) {
