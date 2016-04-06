@@ -8,5 +8,5 @@ strict graph teste_clique{
 	e -- b
 	d -- e
 	a -- e
-	e -- c
+//	e -- c
 }

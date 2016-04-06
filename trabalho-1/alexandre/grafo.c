@@ -8,7 +8,7 @@ typedef struct aresta *aresta;
 
 static aresta cria_aresta( lista lv, Agedge_t *e );
 
-static aresta copia_aresta( aresta a );
+static aresta copia_aresta( aresta a, grafo ng );
 
 static aresta busca_aresta( lista l, vertice origem, vertice destino );
 
@@ -80,14 +80,15 @@ static aresta cria_aresta( lista lv, Agedge_t *e ){
 
 
 //------------------------------------------------------------------------------
-// Cria e devolve uma estrutura de aresta a partir de uma outra aresta
+// Cria e devolve uma estrutura de aresta mapeando as referências
+// de origem e destino da 'aresta a' para o 'grafo ng'
 
-static aresta copia_aresta( aresta a ) {
+static aresta copia_aresta( aresta a, grafo ng ) {
 
 	aresta at   = malloc(sizeof(struct aresta)+1);
 	at->peso    = a->peso;
-	at->origem  = a->origem;
-	at->destino = a->destino;
+	at->origem  = busca_vertice(ng->vertices, nome_vertice(a->origem));
+	at->destino = busca_vertice(ng->vertices, nome_vertice(a->destino));
 	return at;
 }
 
@@ -396,19 +397,25 @@ grafo copia_grafo(grafo g) {
 		vt->arestas_saida   = constroi_lista();
 		vt->arestas_entrada = constroi_lista();
 
-		for( na = primeiro_no(v->arestas_saida); na; na = proximo_no(na) ){
-			aresta at = copia_aresta(conteudo(na));
-			insere_lista(at, vt->arestas_saida);
+		insere_lista(vt, ng->vertices);
+	}
+
+	for( nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) ){
+
+		vertice vo = conteudo(nv);
+		vertice vd = busca_vertice(ng->vertices, nome_vertice(vo));
+
+		for( na = primeiro_no(vo->arestas_saida); na; na = proximo_no(na) ){
+			aresta at = copia_aresta( conteudo(na), ng );
+			insere_lista(at, vd->arestas_saida);
 		}
 
 		if( g->direcionado ){
-			 for( na = primeiro_no(v->arestas_entrada); na; na = proximo_no(na) ){
-				aresta at = copia_aresta(conteudo(na));
-				insere_lista(at, vt->arestas_entrada);
+			 for( na = primeiro_no(vo->arestas_entrada); na; na = proximo_no(na) ){
+				aresta at = copia_aresta( conteudo(na), ng );
+				insere_lista(at, vd->arestas_entrada);
 			 }
 		}
-
-		insere_lista(vt, ng->vertices);
 	}
 
 	ng->direcionado = g->direcionado;
@@ -441,17 +448,23 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 		case  1 : la = v->arestas_saida;   break;
 		case -1 : la = v->arestas_entrada; break;
 	}
-
+printf("Vizinhos de %s : ", nome_vertice(v));
 	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
 		aresta  a = conteudo(n);
 
+//printf("o:%s ",nome_vertice(a->origem));
+//printf("d:%s ",nome_vertice(a->destino));
+
 		if( v == a->origem ){
 			insere_lista( a->destino, lv );
+printf("%s ",nome_vertice(a->destino));
 		}
 		if( v == a->destino ){
 			insere_lista( a->origem, lv );
+printf("%s ",nome_vertice(a->origem));
 		}
 	}
+printf("\n");
 	return lv;
 }
 
@@ -490,17 +503,16 @@ int clique(lista l, grafo g) {
 
 	if( g->direcionado ) return 0;
 
-	vertice vi, vx, vy;
-	lista   lv;
-
 	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
-		vi = conteudo(n);
-		lv = vizinhanca(vi,0,g);
 
-		for( no m = proximo_no(n); m; m = proximo_no(m) ){
-			vx = conteudo(m);
-			vy = busca_vertice(lv, nome_vertice(vx));
-			if( ! vy ) return 0;
+		vertice vi = conteudo(n);
+		lista   lv = vizinhanca(vi,0,g);
+
+		for( no m = primeiro_no(l); m; m = proximo_no(m) ){
+			if( n == m ) continue;
+			vertice vx = conteudo(m);
+			vertice vy = busca_vertice(lv, nome_vertice(vx));
+			if( !vy ) return 0;
 		}
 	}
 	return 1;
@@ -522,7 +534,13 @@ int simplicial(vertice v, grafo g) {
 
 	if( tamanho_lista(l) == 0 )
 		return 1;
-	return clique(l,g);
+
+int x = clique(l,g);
+if( x ) printf("A vizinhança de %s com %d vértices é uma clique\n", nome_vertice(v),tamanho_lista(l));
+else printf("A vizinhança de %s com %d vértices NÃO é clique\n", nome_vertice(v),tamanho_lista(l));
+return x;
+
+//	return clique(l,g);
 }
 
 //------------------------------------------------------------------------------
@@ -543,13 +561,19 @@ int cordal(grafo g) {
 
 	grafo ng = copia_grafo(g);
 
-	for( no n = primeiro_no(ng->vertices); n; n = proximo_no(n) ){
+vertice v = busca_vertice(ng->vertices, (char*)"e");
+if( simplicial( v, ng ) )
+	 printf("O vértice '%s' é simplicial\n",     nome_vertice(v));
+else printf("O vértice '%s' NÃO é simplicial\n", nome_vertice(v));
 
-		if( simplicial(conteudo(n), ng) ){
-			if( !remove_no( ng->vertices , n, destroi_vertice ) )
-				return 0;
-		}
-	}
+//	for( no n = primeiro_no(ng->vertices); n; n = proximo_no(n) ){
+
+//		if( simplicial(conteudo(n), ng) ){
+//			if( !remove_no( ng->vertices , n, destroi_vertice ) )
+//				return 0;
+//		}
+//	}
+
 	return ( tamanho_lista(ng->vertices) == 0 ) ? 1 : 0;
 }
 

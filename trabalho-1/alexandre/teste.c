@@ -12,8 +12,8 @@ int main(void) {
 
 //	escreve_grafo(stdout, g);
 
-//	grafo ng = copia_grafo(g);
-//	escreve_grafo(stdout, ng);
+	grafo ng = copia_grafo(g);
+	escreve_grafo(stdout, ng);
 
 
 //	lista lv = constroi_lista();
@@ -41,6 +41,11 @@ int main(void) {
 
 //	escreve_grafo(stdout, g);
 
-	return ! destroi_grafo(g);
+	int r = destroi_grafo(g);
+	if(r) printf("Grafo destruido! \n");
+	else  printf("Falha ao destruir grafo \n");
+	return !r;
+
+//	return ! destroi_grafo(g);
 //	return 0;
 }
