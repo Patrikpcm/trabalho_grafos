@@ -444,6 +444,7 @@ int clique(lista l, grafo g) {
 // um vértice é simplicial no grafo se sua vizinhança é uma clique
 
 int simplicial(vertice v, grafo g) {
+	if(g->direcionado)return 0;
 	lista l= constroi_lista();
 	l=vizinhanca(v,0,g);
 	if(tamanho_lista(l)>0){
@@ -469,7 +470,18 @@ int simplicial(vertice v, grafo g) {
 //     v_i é simplicial em G - v_1 - ... - v_{i-1}
 
 int cordal(grafo g) {
-
-	return ( g ) ? 1 : 0;
+	if(!g or g->direcionado) return 0;
+	grafo cg= copia_grafo(g);
+	for(no x=primeiro_no(g->vertices);x;x=proximo_no(x)){
+		if(simplicial(conteudo(x)){
+			remove_no(cg->vertices,x,destroi_vertice);
+		}
+	}
+	if(tamanho_lista(cg->vertices>0){
+	return 0;
+	}else
+	return 1;
+	
+	
 }
 
