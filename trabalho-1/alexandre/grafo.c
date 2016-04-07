@@ -462,23 +462,17 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 		case  1 : la = v->arestas_saida;   break;
 		case -1 : la = v->arestas_entrada; break;
 	}
-//printf("Vizinhos de %s : ", nome_vertice(v));
+
 	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
 		aresta  a = conteudo(n);
 
-//printf("o:%s ",nome_vertice(a->origem));
-//printf("d:%s ",nome_vertice(a->destino));
-
 		if( v == a->origem ){
 			insere_lista( a->destino, lv );
-//printf("%s ",nome_vertice(a->destino));
 		}
 		if( v == a->destino ){
 			insere_lista( a->origem, lv );
-//printf("%s ",nome_vertice(a->origem));
 		}
 	}
-//printf("\n");
 	return lv;
 }
 
@@ -548,11 +542,6 @@ int simplicial(vertice v, grafo g) {
 
 	if( tamanho_lista(l) == 0 )
 		return 1;
-
-//int x = clique(l,g);
-//if( x ) printf("A vizinhança de %s com %d vértices é uma clique\n", nome_vertice(v),tamanho_lista(l));
-//else printf("A vizinhança de %s com %d vértices NÃO é clique\n", nome_vertice(v),tamanho_lista(l));
-//return x;
 
 	return clique(l,g);
 }
