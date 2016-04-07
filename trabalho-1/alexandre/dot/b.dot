@@ -1,4 +1,4 @@
-strict graph "a" {
+strict graph "b" {
 	a -- b
 	b -- c
 	c -- d
