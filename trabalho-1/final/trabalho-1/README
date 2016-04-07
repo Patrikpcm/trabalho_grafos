@@ -1,0 +1,77 @@
+Trabalho de algoritmos e teoria dos grafos:
+
+
+	Participantes:
+		Alexandre Calerio de Oliveira 		GRR20080568
+		Leonardo Vincius Carvalho Zanella	GRR20103241
+
+
+Estruturas implementada:
+
+	Estrutura do grafo:
+			char*	nome:  			Nome do grafo atribuido pela função agnameof().
+			int		direcionado: 	Booleano que indica se o grafo é direcionado atribuido pela função agisdirected().
+			int		ponderado:		Booleano que indica se o grafo é ponderado, atribuido caso uma aresta tenha a propriedade peso.
+			int 	n_vertices:		Número de vértices do grafo, atribuido pela função agnnodes() da cgraph.
+			int 	n_arestas:		Número de arestas do grafo, atribuido pela função agedges() da cgraph.
+			lista 	vertices:		estutura do tipo lista, onde os nós apontam para a estrutura do tipo vértice.
+
+	Estrutura do vértice:
+			char*	nome:			Nome do vértice, atribuido pela função agnameof().
+			lista	arestas_entrada	estrutura do tipo lista que possui apontadores para estrutura do tipo aresta.
+			lista	arestas_saida	estrutura do tipo lista que possui apontadores para estrutura do tipo aresta.
+			
+	Estutura da aresta:
+			long int peso:			Inteiro que recebe valor do peso da aresta.
+			vertice	origem:			ponteiro do tipo vertice para o vértice de origem da aresta.
+			vertice	destino:		ponteiro do tipo vertice para o vértice de destino da aresta.
+			
+Funções Extras implementadas:
+	aresta	cria_aresta( lista lv, Agedge_t *e );
+		Recebe o ponteiro do tipo Agedge_t e a lista de vertices do grafo.
+		Procura os vértices(entrada,saida) utilizando a função busca_vertice para encontrar o apontador para os vértices de origem e destino.
+		verifica se existe peso na aresta.
+		retorna a aresta criada.
+	
+	aresta copia_aresta( aresta a, grafo ng );
+		Recebe uma aresta a e um grafo.
+		Aloca memoria para a estrutura atribui o valor de peso, busca os vertices de origem e destino e atribui nos respectivos apontadores.
+	
+	aresta busca_aresta( lista l, vertice origem, vertice destino );
+		Recebe a lista de arestas e dois vertices.
+		Procura na lista de aresta se o existe uma aresta que aponta para o destino e para a origem e retorna a aresta.
+	
+	lista arestas( grafo g );
+		Recebe um grafo g
+		Devolve uma lista com todas as arestas do grafo g.
+		
+	vertice busca_vertice( lista l, char *nome );
+		Recebe uma lista de vertices de um grafo e o nome do grafo.
+		Retorna o vertice especificado pelo nome.
+		
+	int destroi_aresta( void *ptr );
+		Recebe o ponteiro para um aresta.
+		Desaloca a aresta  ptr.
+		
+	int destroi_vertice( void *ptr );
+		Recebe o ponteiro para um vertice 
+		Desaloca o vertice as listas de arestas 
+		
+		
+	
+Funções implementadas do trabalho:
+	int clique(lista l, grafo g);
+		Para cada vertice n da lista l:
+		busca os vizinhos e verifica se é igual a lista l
+		se for retorna 1, caso contrario retorna 0
+		
+	int simplicial(vertice v, grafo g)
+		Busca a Vizinhança do vertice v no grafo v, se for 0 retorna 1. se não verifica se os vizinhos são uma clique.
+		
+		
+	int cordal(grafo g)
+		Copia o grafo g em uma variavel auxiliar (para não alterar a estrutura original.
+		Percorre a lista de vertices da copia verificando se o vertice é simplicial, se for ele é retirado do grafo
+		Recomeça o laço até que o grafo possua um unico vertice que trivialmente é simplicial, logo o grafo é cordal
+
+	
