@@ -12,8 +12,8 @@ int main(void) {
 
 //	escreve_grafo(stdout, g);
 
-	grafo ng = copia_grafo(g);
-	escreve_grafo(stdout, ng);
+//	grafo ng = copia_grafo(g);
+//	escreve_grafo(stdout, ng);
 
 
 //	lista lv = constroi_lista();
@@ -39,13 +39,14 @@ int main(void) {
 	printf("%d arestas\n",    n_arestas(g));
 	printf("%s é cordal\n",   cordal(g) ? "" : "não ");
 
-//	escreve_grafo(stdout, g);
+	escreve_grafo(stdout, g);
 
-	int r = destroi_grafo(g);
-	if(r) printf("Grafo destruido! \n");
-	else  printf("Falha ao destruir grafo \n");
-	return !r;
+//	int r = destroi_grafo(g);
+//	if(r) printf("Grafo destruido! \n");
+//	else  printf("Falha ao destruir grafo \n");
+//	return !r;
 
-//	return ! destroi_grafo(g);
+	return ! destroi_grafo(g);
+
 //	return 0;
 }

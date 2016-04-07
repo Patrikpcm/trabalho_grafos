@@ -94,15 +94,29 @@ static aresta copia_aresta( aresta a, grafo ng ) {
 
 //------------------------------------------------------------------------------
 // Procura por uma aresta em uma lista dados os vértices de origem e destino
-// Retorna o ponteiro para a resta ou NULL caso não seja encontrada
+// Caso origem ou destino tenha valor NULL, retorna a primeira aresta que tenha
+// a extremidade não nula, caso contrário retorna o ponteiro para a resta de
+// extremidades origem -- destino ou NULL caso não possa ser encontrada
 
 static aresta busca_aresta( lista l, vertice origem, vertice destino ) {
 
 	if( !l ) return NULL;
+
 	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
+
 		aresta  a = conteudo(n);
-		if( (origem == a->origem) && (destino == a->destino) )
-		return a;
+		
+		if( origem && destino )
+			if( (origem == a->origem) && (destino == a->destino) )
+				return a;
+		
+		if( origem && !destino )
+			if( origem == a->origem ) 
+				return a;
+		
+		if( !origem && destino )
+			if( destino == a->destino )
+				return a;
 	}
 	return NULL;
 }
@@ -448,7 +462,7 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 		case  1 : la = v->arestas_saida;   break;
 		case -1 : la = v->arestas_entrada; break;
 	}
-printf("Vizinhos de %s : ", nome_vertice(v));
+//printf("Vizinhos de %s : ", nome_vertice(v));
 	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
 		aresta  a = conteudo(n);
 
@@ -457,14 +471,14 @@ printf("Vizinhos de %s : ", nome_vertice(v));
 
 		if( v == a->origem ){
 			insere_lista( a->destino, lv );
-printf("%s ",nome_vertice(a->destino));
+//printf("%s ",nome_vertice(a->destino));
 		}
 		if( v == a->destino ){
 			insere_lista( a->origem, lv );
-printf("%s ",nome_vertice(a->origem));
+//printf("%s ",nome_vertice(a->origem));
 		}
 	}
-printf("\n");
+//printf("\n");
 	return lv;
 }
 
@@ -535,12 +549,12 @@ int simplicial(vertice v, grafo g) {
 	if( tamanho_lista(l) == 0 )
 		return 1;
 
-int x = clique(l,g);
-if( x ) printf("A vizinhança de %s com %d vértices é uma clique\n", nome_vertice(v),tamanho_lista(l));
-else printf("A vizinhança de %s com %d vértices NÃO é clique\n", nome_vertice(v),tamanho_lista(l));
-return x;
+//int x = clique(l,g);
+//if( x ) printf("A vizinhança de %s com %d vértices é uma clique\n", nome_vertice(v),tamanho_lista(l));
+//else printf("A vizinhança de %s com %d vértices NÃO é clique\n", nome_vertice(v),tamanho_lista(l));
+//return x;
 
-//	return clique(l,g);
+	return clique(l,g);
 }
 
 //------------------------------------------------------------------------------
@@ -561,19 +575,38 @@ int cordal(grafo g) {
 
 	grafo ng = copia_grafo(g);
 
-vertice v = busca_vertice(ng->vertices, (char*)"e");
-if( simplicial( v, ng ) )
-	 printf("O vértice '%s' é simplicial\n",     nome_vertice(v));
-else printf("O vértice '%s' NÃO é simplicial\n", nome_vertice(v));
+	lista lvg   = ng->vertices;
+	int removeu = 1;
 
-//	for( no n = primeiro_no(ng->vertices); n; n = proximo_no(n) ){
+	while( tamanho_lista(lvg) > 0 && removeu ){
 
-//		if( simplicial(conteudo(n), ng) ){
-//			if( !remove_no( ng->vertices , n, destroi_vertice ) )
-//				return 0;
-//		}
-//	}
+		removeu = 0 ;
+		
+		for( no n = primeiro_no(lvg); n; n = proximo_no(n) ){
 
-	return ( tamanho_lista(ng->vertices) == 0 ) ? 1 : 0;
+			vertice vs = conteudo(n);
+			if( simplicial(vs, ng) ){
+
+				lista lvv = vizinhanca(vs, 0, ng);
+
+				for( no m = primeiro_no(lvv); m; m = proximo_no(m) ){
+
+					vertice vv = conteudo(m);
+
+					for( no r = primeiro_no(vv->arestas_saida); r; r = proximo_no(r) ){
+						
+						aresta a = conteudo(r);
+						if( (a->origem == vs) || (a->destino == vs) )	
+							remove_no( vv->arestas_saida , r, destroi_aresta );
+					}
+				}
+				removeu = remove_no( lvg , n, destroi_vertice );
+				break;
+			}
+		}
+	}
+	
+	destroi_grafo( ng );
+	return !tamanho_lista(ng->vertices);
 }
 
