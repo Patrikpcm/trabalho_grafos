@@ -94,9 +94,7 @@ static aresta copia_aresta( aresta a, grafo ng ) {
 
 //------------------------------------------------------------------------------
 // Procura por uma aresta em uma lista dados os vértices de origem e destino
-// Caso origem ou destino tenha valor NULL, retorna a primeira aresta que tenha
-// a extremidade não nula, caso contrário retorna o ponteiro para a resta de
-// extremidades origem -- destino ou NULL caso não possa ser encontrada
+// Retorna o ponteiro para a resta encontrada ou NULL caso contrário
 
 static aresta busca_aresta( lista l, vertice origem, vertice destino ) {
 
@@ -105,18 +103,8 @@ static aresta busca_aresta( lista l, vertice origem, vertice destino ) {
 	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
 
 		aresta  a = conteudo(n);
-		
-		if( origem && destino )
-			if( (origem == a->origem) && (destino == a->destino) )
-				return a;
-		
-		if( origem && !destino )
-			if( origem == a->origem ) 
-				return a;
-		
-		if( !origem && destino )
-			if( destino == a->destino )
-				return a;
+		if( (origem == a->origem) && (destino == a->destino) )
+			return a;
 	}
 	return NULL;
 }
@@ -267,7 +255,8 @@ grafo le_grafo(FILE *input) {
     if(!(ag && agisstrict(ag)))
         return NULL;
 
-    struct grafo *g = malloc(sizeof(struct grafo));
+//	struct grafo *g = malloc(sizeof(struct grafo));
+	grafo g = malloc(sizeof(struct grafo));
     if( !g ) return NULL;
 
 	g->vertices = constroi_lista();
@@ -281,7 +270,8 @@ grafo le_grafo(FILE *input) {
 	for( Agnode_t *v = agfstnode(ag); v; v = agnxtnode(ag,v) ){
 
 		vertice vt = malloc(sizeof(struct vertice));
-		vt->nome   = agnameof(v);
+		vt->nome   = malloc(sizeof(char) * strlen(agnameof(v))+1);
+		strcpy( vt->nome, agnameof(v) );
 		vt->arestas_saida   = constroi_lista();
 		vt->arestas_entrada = constroi_lista();
 
@@ -407,17 +397,17 @@ grafo copia_grafo(grafo g) {
 		vertice vt = malloc(sizeof(struct vertice));
 		v = conteudo(nv);
 		vt->nome = malloc(sizeof(char) * strlen(nome_vertice(v))+1);
-		strcpy(vt->nome, v->nome);
+		strcpy(vt->nome, nome_vertice(v));
 		vt->arestas_saida   = constroi_lista();
 		vt->arestas_entrada = constroi_lista();
 
 		insere_lista(vt, ng->vertices);
 	}
 
-	for( nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) ){
+	for( nv = primeiro_no(ng->vertices); nv; nv = proximo_no(nv) ){
 
-		vertice vo = conteudo(nv);
-		vertice vd = busca_vertice(ng->vertices, nome_vertice(vo));
+		vertice vd = conteudo(nv);
+		vertice vo = busca_vertice(g->vertices, nome_vertice(vd));
 
 		for( na = primeiro_no(vo->arestas_saida); na; na = proximo_no(na) ){
 			aresta at = copia_aresta( conteudo(na), ng );
@@ -539,7 +529,6 @@ int simplicial(vertice v, grafo g) {
 		return 0;
 
 	lista l = vizinhanca(v,0,g);
-
 	if( tamanho_lista(l) == 0 )
 		return 1;
 
@@ -568,22 +557,14 @@ int cordal(grafo g) {
 	int removeu = 1;
 
 	while( tamanho_lista(lvg) > 0 && removeu ){
-
 		removeu = 0 ;
-		
 		for( no n = primeiro_no(lvg); n; n = proximo_no(n) ){
-
 			vertice vs = conteudo(n);
 			if( simplicial(vs, ng) ){
-
 				lista lvv = vizinhanca(vs, 0, ng);
-
 				for( no m = primeiro_no(lvv); m; m = proximo_no(m) ){
-
 					vertice vv = conteudo(m);
-
 					for( no r = primeiro_no(vv->arestas_saida); r; r = proximo_no(r) ){
-						
 						aresta a = conteudo(r);
 						if( (a->origem == vs) || (a->destino == vs) )	
 							remove_no( vv->arestas_saida , r, destroi_aresta );
@@ -594,7 +575,7 @@ int cordal(grafo g) {
 			}
 		}
 	}
-	
+
 	destroi_grafo( ng );
 	return !tamanho_lista(ng->vertices);
 }
