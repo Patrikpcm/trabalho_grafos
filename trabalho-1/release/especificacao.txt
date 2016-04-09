@@ -1,0 +1,79 @@
+Trabalho de Implementação 1
+CI065 / CI755 - Algoritmos e Teoria dos Grafos
+
+Para a representação de grafos na entrada e saída ao longo da disciplina 
+vamos utilizar a linguagem de descrição de grafos dot que é implementada
+pelo pacote de software GraphViz.
+
+Para uma amostra da linguagem dot veja esta galeria de grafos.
+
+Usaremos as rotinas de leitura da biblioteca cgraph (que faz parte do 
+pacote GraphViz) para fazer a leitura dos arquivos na linguagem dot.
+
+A biblioteca cgraph implementa (entre outras coisas) uma estrutura de 
+dados para a manipulação de grafos e um interpretador ("parser") da 
+linguagem dot.
+
+O objetivo deste trabalho é implementar uma interface com a biblioteca 
+cgraph que permita:
+
+- ler grafos descritos na linguagem dot em toda sua flexibilidade, sem 
+  ter o trabalho de implementar um interpretador para a linguagem,
+
+- usar a estrutura de dados montada pela biblioteca cgraph para 
+  construir sua própria estrutura de dados para a representação de 
+  grafos e
+
+- implementar uma biblioteca com algumas rotinas para a manipulação de 
+  grafos.
+
+As rotinas e estruturas de dados implementadas neste trabalho serão 
+utilizadas nos trabalhos posteriores, com eventuais adaptações, conforme
+a necessidade.
+
+O pacote GraphViz é distribuido livremente para diversas plataformas.
+
+Em particular, nas distribuições de GNU/Linux baseadas na distribuição 
+Debian, basta instalar o pacote libgraphviz-dev. Recomenda-se também 
+instalar os pacotes graphviz (utilitários, especialmente para desenhar 
+grafos) e graphviz-doc (documentação adicional). Estes pacotes estão 
+instalados nos servidores da rede do Departamento de Informática.
+
+Para auxiliar a execução do trabalho, é fornecido o arquivo 
+trabalho-1.tar.gz cujo conteúdo, uma vez expandido, é o seguinte.
+
+trabalho-1/lista.h e trabalho-1/grafo.h:
+   a especificação do que deve ser implementado
+
+trabalho-1/lista.c:
+   uma implementação do especificado em lista.h para ser usado como 
+   referência
+
+trabalho-1/exemplo.c:
+   um programa para ilustrar o uso da biblioteca cgraph
+
+trabalho-1/teste.c:
+   um pequeno programa de teste.
+
+trabalho-1/makefile:
+   um makefile que compila exemplo.c com as opções de compilação que 
+   serão usadas na correção
+
+O trabalho deve ser entregue sob a forma de um arquivo de nome 
+fulano-sicrano.tar.gz, sendo que fulano e sicrano devem ser substituídos
+pelos login name dos autores.
+
+O arquivo fulano-sicrano.tar.gz, uma vez expandido, deve criar (somente)
+os seguintes arquivos:
+
+fulano-sicrano/readme.txt:
+   arquivo que deve ser usado para comunicar tudo que seja relevante 
+   para a correção do trabalho.
+
+fulano-sicrano/lista.c:
+   a implementação do especificado em trabalho-1/lista.h; você pode 
+   fazer sua própria implementação ou usar a que foi fornecida em 
+   trabalho-1.tar.gz.
+
+fulano-sicrano/grafo.c:
+   a implementação do especificado em trabalho-1/grafo.h.

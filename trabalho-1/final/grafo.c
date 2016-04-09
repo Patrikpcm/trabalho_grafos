@@ -16,9 +16,9 @@ static lista arestas( grafo g );
 
 static vertice busca_vertice( lista l, char *nome );
 
-int destroi_aresta( void *ptr );
+static int destroi_aresta( void *ptr );
 
-int destroi_vertice( void *ptr );
+static int destroi_vertice( void *ptr );
 
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados para representar um grafo
@@ -159,7 +159,7 @@ static vertice busca_vertice(lista l, char *nome) {
 //------------------------------------------------------------------------------
 // Libera a memória ocupada por uma aresta
 
-int destroi_aresta( void *ptr ){
+static int destroi_aresta( void *ptr ){
 
 	struct aresta *a = ptr;
 
@@ -173,7 +173,7 @@ int destroi_aresta( void *ptr ){
 //------------------------------------------------------------------------------
 // Libera a memória ocupada por um vértice
 
-int destroi_vertice( void *ptr ){
+static int destroi_vertice( void *ptr ){
 
 	struct vertice *v = ptr;
 
