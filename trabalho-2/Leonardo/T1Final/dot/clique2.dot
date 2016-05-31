@@ -1,0 +1,12 @@
+strict graph teste_clique{
+	a -- b
+	a -- c
+	a -- d
+	a -- e
+	b -- c
+	b -- d
+	b -- e
+	c -- d
+	c -- e
+	d -- e
+}
