@@ -582,14 +582,55 @@ int cordal(grafo g) {
 }
 
 
-lista ordem_perfeita(grafo g){
+//------------------------------------------------------------------------------
+// devolve uma lista de vertices com a ordem dos vértices dada por uma 
+// busca em largura lexicográfica
+
+lista busca_largura_lexicografica(grafo g){
 	grafo f = copia_grafo(g);
 	lista l = f->vertices;
-	for(no n = primeiro_no(l); n; n = proximo_no(n) ){
-		//atribui tamanho_lista no vetor lex e busca vizinhos
-		// adiciona a lista de retorno o vertice com lex
-	}
+	lista ret = constroi_lista();
+	int rotulo = tamanho_lista(l);
+	int pos = 0;
+	no n= primeiro_no(l);
+	/* while(n){
+		vertice v = conteudo(n);
+		v->lex[pos]=
+		
+		
+		
+	} */
 	
+	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
+		vertice v = conteudo(n);
+		v->lex[pos] = rotulo;
+		rotulo--;
+		lista lv = vizinhanca(v,0,f);
+		for( no m = primeiro_no(lv);m; m = proximo_no(m)){
+			vertice vz = conteudo(m);
+			vz->lex[pos] = rotulo;
+			
+			
+		}
+		
+		//pos ++;
+		//estou pensando em fazer recursivo pela questão de pegar os vizinhos e atualizar a lista l
+	}	
 }
+
+//------------------------------------------------------------------------------
+// devolve 1, se a lista l representa uma 
+//            ordem perfeita de eliminação para o grafo g ou
+//         0, caso contrário
+//
+// o tempo de execução é O(|V(G)|+|E(G)|)
+
+int ordem_perfeita_eliminacao(lista l, grafo g);
+
+//------------------------------------------------------------------------------
+// devolve 1, se g é um grafo cordal ou
+//         0, caso contrário
+
+int cordal(grafo g);
 
 
