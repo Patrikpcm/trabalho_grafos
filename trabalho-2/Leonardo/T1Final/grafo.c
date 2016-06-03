@@ -602,7 +602,7 @@ lista busca_largura_lexicografica(grafo g){
 	int label_atual = (int)tamanho_lista(g->vertices);
 	no aux= primeiro_no(l);
 	vertice primeiro= conteudo(aux);
-	primeiro->label[0]= label_atual;
+	//primeiro->label[0]= label_atual;
 	label_atual--;
 	vertice n;
 	while( (n=vertice_maior_label(l)) != NULL){
@@ -617,6 +617,7 @@ lista busca_largura_lexicografica(grafo g){
 		insere_lista(n,retorno);
 		
 	}
+
 	printf("Retorno \n");
 	for(no m = primeiro_no(retorno);m;m=proximo_no(m)){
 		vertice p= conteudo(m);
