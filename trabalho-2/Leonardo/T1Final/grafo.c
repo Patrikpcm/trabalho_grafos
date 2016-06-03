@@ -602,11 +602,8 @@ lista busca_largura_lexicografica(grafo g){
 	int label_atual = (int)tamanho_lista(g->vertices);
 	no aux= primeiro_no(l);
 	vertice primeiro= conteudo(aux);
-	primeiro->label[0]= label_atual;
+	//primeiro->label[0]= label_atual;
 	label_atual--;
-	
-	
-	escreve_vertice(primeiro,(int)tamanho_lista(l));
 	vertice n;
 	while( (n=vertice_maior_label(l)) != NULL){
 		n->visitado=1;
@@ -627,18 +624,19 @@ lista busca_largura_lexicografica(grafo g){
 //errro aqui
 //busca o vertice com o maior label lexicografico
 vertice vertice_maior_label(lista l){
-	no aux = primeiro_no(l);
-	vertice retorno = conteudo(aux);
-	
+	//no aux = primeiro_no(l);
+	vertice retorno;// = conteudo(aux);
+		
 	for( no n = primeiro_no(l); n ; n = proximo_no(n)){
 		vertice v = conteudo(n);
-		if(!v->visitado){
+		if(v->visitado == 0){
 			if(label_maior(retorno,v,(int)tamanho_lista(l))){
 			retorno = v;
+			printf("retorno atualizado \n");
 			}		
 		}
 	}	
-	return retorno->visitado? NULL:retorno;	
+	return retorno->visitado==1? NULL:retorno;	
 }
 
 //retorna 0 se v é maior, e 1 se x é maior
@@ -657,14 +655,10 @@ int label_maior(vertice v, vertice x, int tamanho){
 
 void adiciona_label(vertice v, int valor){
 	int i = 0;
-	
-	do{
-	++i;
-	}while (v->label[i] > 0);
-	
-	
+	while (v->label[i] > 0){
+		++i;		
+	}
 	v->label[i] = valor;
-	
 }
 
 void escreve_vertice(vertice v,int tam){
