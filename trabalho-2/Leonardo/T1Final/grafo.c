@@ -602,7 +602,7 @@ lista busca_largura_lexicografica(grafo g){
 	int label_atual = (int)tamanho_lista(g->vertices);
 	no aux= primeiro_no(l);
 	vertice primeiro= conteudo(aux);
-	primeiro->label[0]= label_atual;
+	//primeiro->label[0]= label_atual;
 	label_atual--;
 	vertice n;
 	while( (n=vertice_maior_label(l)) != NULL){
@@ -610,8 +610,7 @@ lista busca_largura_lexicografica(grafo g){
 		lista vizinhos= vizinhanca(n,0,g);
 		for( no m =  primeiro_no(vizinhos); m ; m= proximo_no(m)){
 			vertice x = conteudo(m);
-			adiciona_label(x,label_atual);	
-					
+			adiciona_label(x,label_atual);
 		}
 		label_atual--;
 		escreve_vertice(n,(int)tamanho_lista(l));
