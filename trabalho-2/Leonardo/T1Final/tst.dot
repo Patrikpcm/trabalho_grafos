@@ -1,0 +1,9 @@
+strict graph g {
+ a--b
+ a--c
+ a--d
+ b--c
+ c--d
+
+
+}
