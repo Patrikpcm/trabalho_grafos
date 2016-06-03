@@ -39,7 +39,15 @@ int main(void) {
 	printf("%d arestas\n",    n_arestas(g));
 	printf("%s é cordal\n",   cordal(g) ? "" : "não ");
 
-	escreve_grafo(stdout, g);
+busca_largura_lexicografica(g);
+
+
+	escreve_especial(g);
+
+
+	//escreve_grafo(stdout, g);
+	
+	
 
 //	int r = destroi_grafo(g);
 //	if(r) printf("Grafo destruido! \n");
