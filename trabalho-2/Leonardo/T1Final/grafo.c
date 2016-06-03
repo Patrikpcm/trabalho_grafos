@@ -624,10 +624,11 @@ lista busca_largura_lexicografica(grafo g){
 //errro aqui
 //busca o vertice com o maior label lexicografico
 vertice vertice_maior_label(lista l){
-	//no aux = primeiro_no(l);
+	no aux = primeiro_no(l);
 	vertice retorno = conteudo(aux);
 	while (retorno->visitado==1){
-		retorno= proximo_no(retorno);
+			aux= proximo_no(retorno);
+			retorno= conteudo(aux);
 	}
 		
 	for( no n = primeiro_no(l); n ; n = proximo_no(n)){
