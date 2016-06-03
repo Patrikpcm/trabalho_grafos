@@ -602,7 +602,7 @@ lista busca_largura_lexicografica(grafo g){
 	int label_atual = (int)tamanho_lista(g->vertices);
 	no aux= primeiro_no(l);
 	vertice primeiro= conteudo(aux);
-	//primeiro->label[0]= label_atual;
+	primeiro->label[0]= label_atual;
 	label_atual--;
 	vertice n;
 	while( (n=vertice_maior_label(l)) != NULL){
@@ -639,7 +639,7 @@ vertice vertice_maior_label(lista l){
 		if(v->visitado == 0){
 			if(label_maior(retorno,v,(int)tamanho_lista(l))){
 			retorno = v;
-			printf("retorno atualizado \n");
+			//printf("retorno atualizado \n");
 			}		
 		}
 	}	
