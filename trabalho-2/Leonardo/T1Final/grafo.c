@@ -50,7 +50,8 @@ struct vertice {
 	char *nome;
 	lista arestas_saida;
 	lista arestas_entrada;
-	int *lex;
+	int *label;
+	int visitado;
 };
 
 //------------------------------------------------------------------------------
@@ -581,41 +582,112 @@ int cordal(grafo g) {
 	return !tamanho_lista(ng->vertices);
 }
 
-
 //------------------------------------------------------------------------------
 // devolve uma lista de vertices com a ordem dos vértices dada por uma 
 // busca em largura lexicográfica
 
 lista busca_largura_lexicografica(grafo g){
-	grafo f = copia_grafo(g);
-	lista l = f->vertices;
-	lista ret = constroi_lista();
-	int rotulo = tamanho_lista(l);
-	int pos = 0;
-	no n= primeiro_no(l);
-	/* while(n){
-		vertice v = conteudo(n);
-		v->lex[pos]=
-		
-		
-		
-	} */
+	lista retorno = constroi_lista();
+	lista l = g->vertices;
+	for( no n = primeiro_no(l) ; n ; n = proximo_no(n)){
+		vertice v= conteudo(n);
+		v->label = malloc(sizeof(int) * tamanho_lista(l));
+		for( int i = 0; (int)i< tamanho_lista(l);++i){
+			v->label[i]=0;
+			
+		}	
+		v-> visitado=0;
+	}
 	
-	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
-		vertice v = conteudo(n);
-		v->lex[pos] = rotulo;
-		rotulo--;
-		lista lv = vizinhanca(v,0,f);
-		for( no m = primeiro_no(lv);m; m = proximo_no(m)){
-			vertice vz = conteudo(m);
-			vz->lex[pos] = rotulo;
-			
-			
+	int label_atual = (int)tamanho_lista(g->vertices);
+	no aux= primeiro_no(l);
+	vertice primeiro= conteudo(aux);
+	primeiro->label[0]= label_atual;
+	label_atual--;
+	
+	
+	escreve_vertice(primeiro,(int)tamanho_lista(l));
+	vertice n;
+	while( (n=vertice_maior_label(l)) != NULL){
+		n->visitado=1;
+		lista vizinhos= vizinhanca(n,0,g);
+		for( no m =  primeiro_no(vizinhos); m ; m= proximo_no(m)){
+			vertice x = conteudo(m);
+			adiciona_label(x,label_atual);	
+					
 		}
+		label_atual--;
+		escreve_vertice(n,(int)tamanho_lista(l));
+		insere_lista(n,retorno);
 		
-		//pos ++;
-		//estou pensando em fazer recursivo pela questão de pegar os vizinhos e atualizar a lista l
+	}
+	
+	return retorno;
+}
+//errro aqui
+//busca o vertice com o maior label lexicografico
+vertice vertice_maior_label(lista l){
+	no aux = primeiro_no(l);
+	vertice retorno = conteudo(aux);
+	
+	for( no n = primeiro_no(l); n ; n = proximo_no(n)){
+		vertice v = conteudo(n);
+		if(!v->visitado){
+			if(label_maior(retorno,v,(int)tamanho_lista(l))){
+			retorno = v;
+			}		
+		}
 	}	
+	return retorno->visitado? NULL:retorno;	
+}
+
+//retorna 0 se v é maior, e 1 se x é maior
+int label_maior(vertice v, vertice x, int tamanho){
+	for( int i = 0; i<tamanho; ++i){
+		if(v->label[i] != x->label[i]){
+			if( v->label[i] > x->label[i]){
+				return 0;
+			}else{
+				return 1;
+			}			
+		}
+	}
+	return 0;	
+}
+
+void adiciona_label(vertice v, int valor){
+	int i = 0;
+	while (v->label[i] > 0){
+		i++;
+	}
+	v->label[i] = valor;
+	
+}
+
+void escreve_vertice(vertice v,int tam){
+	
+	printf("nome vertice: %s    ", v->nome);
+		for(int i = 0; i< tam; ++i){
+			printf("%d,", v->label[i]);
+		}
+		printf("\n");
+	
+}
+
+
+void escreve_especial(grafo g){
+	int tamanho = (int)tamanho_lista(g->vertices);
+	
+	for(no n = primeiro_no(g->vertices); n; n= proximo_no(n)){
+		vertice v= conteudo(n);
+		printf("nome vertice: %s    ", v->nome);
+		for(int i = 0; i< tamanho; ++i){
+			printf("%d,", v->label[i]);
+		}
+		printf("\n");
+	}
+	
+	
 }
 
 //------------------------------------------------------------------------------
@@ -627,10 +699,6 @@ lista busca_largura_lexicografica(grafo g){
 
 int ordem_perfeita_eliminacao(lista l, grafo g);
 
-//------------------------------------------------------------------------------
-// devolve 1, se g é um grafo cordal ou
-//         0, caso contrário
 
-int cordal(grafo g);
 
 
