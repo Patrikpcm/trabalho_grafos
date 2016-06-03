@@ -602,7 +602,7 @@ lista busca_largura_lexicografica(grafo g){
 	int label_atual = (int)tamanho_lista(g->vertices);
 	no aux= primeiro_no(l);
 	vertice primeiro= conteudo(aux);
-	//primeiro->label[0]= label_atual;
+	primeiro->label[0]= label_atual;
 	label_atual--;
 	vertice n;
 	while( (n=vertice_maior_label(l)) != NULL){
@@ -625,15 +625,15 @@ lista busca_largura_lexicografica(grafo g){
 	}
 	return retorno;
 }
-//errro aqui
+
 //busca o vertice com o maior label lexicografico
 vertice vertice_maior_label(lista l){
 	no aux = primeiro_no(l);
 	vertice retorno = conteudo(aux);
 	 for( no n = primeiro_no(l); n ; n = proximo_no(n)){
-			vertice v= conteudo(n);
-			if(v->visitado==0){			
-			retorno= conteudo(aux);
+			vertice v = conteudo(n);
+			if(v->visitado == 0){			
+			retorno = v;
 			break;
 			}
 	}
@@ -643,7 +643,7 @@ vertice vertice_maior_label(lista l){
 		if(v->visitado == 0){
 			if(label_maior(retorno,v,(int)tamanho_lista(l))){
 			retorno = v;
-			//printf("retorno atualizado \n");
+			
 			}		
 		}
 	}	

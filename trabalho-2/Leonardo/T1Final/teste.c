@@ -37,7 +37,7 @@ int main(void) {
 	printf("%sponderado\n",   ponderado(g) ? "" : "não ");
 	printf("%d vértices\n",   n_vertices(g));
 	printf("%d arestas\n",    n_arestas(g));
-	printf("%s é cordal\n",   cordal(g) ? "" : "não ");
+	//printf("%s é cordal\n",   cordal(g) ? "" : "não ");
 
 busca_largura_lexicografica(g);
 
