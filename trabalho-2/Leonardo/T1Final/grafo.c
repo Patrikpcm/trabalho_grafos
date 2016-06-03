@@ -592,7 +592,7 @@ lista busca_largura_lexicografica(grafo g){
 	for( no n = primeiro_no(l) ; n ; n = proximo_no(n)){
 		vertice v= conteudo(n);
 		v->label = malloc(sizeof(int) * tamanho_lista(l));
-		for( int i = 0; (int)i< tamanho_lista(l);++i){
+		for( int i = 0; i< (int)tamanho_lista(l);++i){
 			v->label[i]=0;
 			
 		}	
@@ -657,9 +657,13 @@ int label_maior(vertice v, vertice x, int tamanho){
 
 void adiciona_label(vertice v, int valor){
 	int i = 0;
-	while (v->label[i] != 0){
-		i++;
-	}
+	
+	do{
+	++i;
+	
+	while (v->label[i] > 0)}
+	
+	
 	v->label[i] = valor;
 	
 }
