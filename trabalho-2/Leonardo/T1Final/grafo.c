@@ -660,8 +660,8 @@ void adiciona_label(vertice v, int valor){
 	
 	do{
 	++i;
-	
-	while (v->label[i] > 0)}
+	}
+	while (v->label[i] > 0)
 	
 	
 	v->label[i] = valor;
