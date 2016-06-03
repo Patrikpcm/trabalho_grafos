@@ -42,7 +42,7 @@ int main(void) {
 busca_largura_lexicografica(g);
 
 
-	escreve_especial(g);
+	
 
 
 	//escreve_grafo(stdout, g);
