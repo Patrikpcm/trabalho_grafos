@@ -617,7 +617,11 @@ lista busca_largura_lexicografica(grafo g){
 		insere_lista(n,retorno);
 		
 	}
-	
+	printf("Retorno \n");
+	for(no m = primeiro_no(retorno);m;m=proximo_no(m)){
+		vertice p= conteudo(m);
+		escreve_vertice(p);
+	}
 	return retorno;
 }
 //errro aqui
