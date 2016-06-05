@@ -40,7 +40,7 @@ int main(void) {
 	//printf("%s é cordal\n",   cordal(g) ? "" : "não ");
 
 	lista l = busca_largura_lexicografica(g);
-	 ordem_perfeita_eliminacao(l,g);
+	monta_vizinhos_a_direita(l,g);
 
 
 	
