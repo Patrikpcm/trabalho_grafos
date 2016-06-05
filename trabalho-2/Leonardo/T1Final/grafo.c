@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <graphviz/cgraph.h>
 #include "grafo.h"
 
@@ -574,9 +575,13 @@ int simplicial(vertice v, grafo g) {
 int cordal(grafo g) {
 
 
-	/* if( !g || g->direcionado )
+	 if( !g || g->direcionado )
 		return 0;
 
+	float tempo;
+	time_t t_ini,t_fim;
+	
+	t_ini=time(NULL);
 	grafo ng = copia_grafo(g);
 
 	lista lvg   = ng->vertices;
@@ -603,13 +608,21 @@ int cordal(grafo g) {
 	}
 
 	destroi_grafo( ng );
-	return !tamanho_lista(ng->vertices); */
+	t_fim = time(NULL);
+	tempo = difftime(t_fim,t_ini);
+	printf("tempo t1: %f",tempo);
+	//return !tamanho_lista(ng->vertices); 
 	
-	
-	
+	t_ini=time(NULL);
 	lista l = busca_largura_lexicografica(g);
 	int i = ordem_perfeita_eliminacao(l,g);
+	t_fim = time(NULL);
+	tempo = difftime(t_fim,t_ini);
+	printf("tempo t1: %f",tempo);
+	
+	
 	return i;
+	
 	
 	
 }
@@ -789,12 +802,12 @@ void monta_vizinhos_a_direita(lista l){
 				insere_lista(destino,vizinhos_direita);				
 			}
 		}	
-		printf("nome vertice n : %s \n   ",v->nome );
+		printf("nome vertice n : %s \n",v->nome );
 		
 		lista viz=v->vizinhos_direita;
 		for(no x = primeiro_no(viz);x;x = proximo_no(x)){
 			vertice ver= conteudo(x);
-			printf("nome vertice: %s \n   ",ver->nome );
+			printf("	      	nome vertice: %s \n",ver->nome );
 				
 		}
 		
