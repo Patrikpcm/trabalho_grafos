@@ -38,6 +38,8 @@ static int vizinhos_v2_contem_v1(vertice v1,vertice v2);
 
 void desvisita_vertices(lista l);
 
+int v_esta_na_lista_vizinhos(vertice v, lista l);
+
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados para representar um grafo
 //
@@ -71,6 +73,7 @@ struct vertice {
 	lista vizinhos_direita;
 	int *label;
 	int visitado;
+	int padding; // só pra evitar warning
 	
 };
 
@@ -605,7 +608,8 @@ int cordal(grafo g) {
 	
 	
 	lista l = busca_largura_lexicografica(g);
-	return ordem_perfeita_eliminacao(l,g);
+	int i = ordem_perfeita_eliminacao(l,g);
+	return i;
 	
 	
 }
@@ -724,7 +728,7 @@ int ordem_perfeita_eliminacao(lista l, grafo g){
 		no proximo = proximo_no(n);
 		vertice v2 = conteudo(proximo);
 		if(!vizinhos_v2_contem_v1(v1,v2)) return 0;
-		printf("contem todos \n")
+		printf("contem todos \n");
 	}
 	
 	
