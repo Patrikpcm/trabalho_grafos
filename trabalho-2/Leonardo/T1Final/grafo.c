@@ -725,7 +725,7 @@ int ordem_perfeita_eliminacao(lista l, grafo g){
 		
 	for(no n = primeiro_no(l);n;n = proximo_no(n)){	
 		vertice v1= conteudo(n);
-		no proximo = proximo_no(n);
+		no proximo = proximo_no(n)== NULL? break:proximo_no(n);
 		vertice v2 = conteudo(proximo);
 		if(!vizinhos_v2_contem_v1(v1,v2)) return 0;
 		printf("contem todos \n");
