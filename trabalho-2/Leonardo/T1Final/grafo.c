@@ -717,6 +717,7 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 		vertice v = conteudo(n);
 		v->visitado=0;
 	}
+	printf("passei");
 	//percorre a lista de vertices
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);
