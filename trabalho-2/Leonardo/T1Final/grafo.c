@@ -725,7 +725,7 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 		for( no m = primeiro_no(v->arestas_saida); m ; m= proximo_no(m)){
 			
 			aresta e = conteudo(m);
-			v->vizinhos_direita= constroi_lista()
+			v->vizinhos_direita= constroi_lista();
 			lista vizinhos_direita=v->vizinhos_direita;
 			
 			vertice destino= e->destino;
