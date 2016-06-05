@@ -721,12 +721,15 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 	//percorre a lista de vertices
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);
+		printf("entrei\n");
 		for( no m = primeiro_no(v->arestas_saida); m ; m= proximo_no(m)){
+			printf("entrei2\n");
 			aresta e = conteudo(m);
 			lista vizinhos_direita=v->vizinhos_direita;
-			if(e->destino->visitado==0){
+			vertice destino= e->destino;
+			if(destino->visitado==0){
 				insere_lista(e->destino,vizinhos_direita);
-				printf("entrei\n");
+				
 			}
 		}
 		
