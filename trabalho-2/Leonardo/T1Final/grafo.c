@@ -22,7 +22,7 @@ static int destroi_vertice( void *ptr );
 
 static void monta_vizinhos_a_direita(lista l);
 
-static lista busca_largura_lexicografica(grafo g);
+
 
 static vertice vertice_maior_label(lista l);
 
@@ -30,7 +30,7 @@ static int label_maior(vertice v, vertice x, int tamanho);
 
 static void adiciona_label(vertice v, int valor);
 
-static int cordal(grafo g);
+
 
 static void escreve_vertice(vertice v,int tam);
 
