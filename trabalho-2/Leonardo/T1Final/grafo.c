@@ -709,6 +709,7 @@ int ordem_perfeita_eliminacao(lista l, grafo g){
 		
 	for(no n = primeiro_no(l);n;n = proximo_no(n)){	
 		vertice v= conteudo(n);
+		printf("nome vertice n : %s \n   ",v->nome );
 		lista viz=v->vizinhos_direita;
 		for(no x = primeiro_no(viz);x;x = proximo_no(x)){
 			vertice ver= conteudo(x);
