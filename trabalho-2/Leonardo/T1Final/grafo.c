@@ -33,7 +33,7 @@ static void adiciona_label(vertice v, int valor);
 
 
 
-static void escreve_vertice(vertice v,int tam);
+
 
 static int vizinhos_v2_contem_v1(vertice v1,vertice v2);
 
@@ -610,7 +610,7 @@ int cordal(grafo g) {
 	destroi_grafo( ng );
 	t_fim = time(NULL);
 	tempo = difftime(t_fim,t_ini);
-	printf("tempo t1: %f",tempo);
+	printf("tempo t1: %f \n",tempo);
 	//return !tamanho_lista(ng->vertices); 
 	
 	t_ini=time(NULL);
@@ -618,7 +618,7 @@ int cordal(grafo g) {
 	int i = ordem_perfeita_eliminacao(l,g);
 	t_fim = time(NULL);
 	tempo = difftime(t_fim,t_ini);
-	printf("tempo t1: %f",tempo);
+	printf("tempo t2: %f \n",tempo);
 	
 	
 	return i;
@@ -658,7 +658,7 @@ lista busca_largura_lexicografica(grafo g){
 			adiciona_label(x,label_atual);
 		}
 		label_atual--;
-		//escreve_vertice(n,(int)tamanho_lista(l));
+		
 		insere_lista(n,retorno);
 		
 	}
@@ -713,15 +713,7 @@ void adiciona_label(vertice v, int valor){
 	v->label[i] = valor;
 }
 
-void escreve_vertice(vertice v,int tam){
-	
-	printf("nome vertice: %s    ", v->nome);
-		for(int i = 0; i< tam; ++i){
-			printf("%d,", v->label[i]);
-		}
-		printf("\n");
-	
-}
+
 
 
 
