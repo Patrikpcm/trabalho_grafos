@@ -620,11 +620,7 @@ lista busca_largura_lexicografica(grafo g){
 		
 	}
 
-	printf("Retorno \n");
-	for(no m = primeiro_no(retorno);m;m=proximo_no(m)){
-		vertice p= conteudo(m);
-		escreve_vertice(p,(int) tamanho_lista(retorno));
-	}
+	
 	return retorno;
 }
 
@@ -731,6 +727,7 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 				insere_lista(e->destino,v->vizinhos_direita);
 			}
 		}
+		printf("passei");
 		for(no x = primeiro_no(v->vizinhos_direita);x;x->proximo_no(x)){
 			printf("nome vertice: %s \n   ", v->nome);
 				
