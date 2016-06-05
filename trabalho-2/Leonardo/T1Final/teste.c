@@ -39,7 +39,8 @@ int main(void) {
 	printf("%d arestas\n",    n_arestas(g));
 	//printf("%s é cordal\n",   cordal(g) ? "" : "não ");
 
-busca_largura_lexicografica(g);
+	lista l = busca_largura_lexicografica(g);
+	 ordem_perfeita_eliminacao(l,g);
 
 
 	

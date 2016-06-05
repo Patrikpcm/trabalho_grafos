@@ -50,8 +50,10 @@ struct vertice {
 	char *nome;
 	lista arestas_saida;
 	lista arestas_entrada;
+	lista vizinhos_direita;
 	int *label;
 	int visitado;
+	
 };
 
 //------------------------------------------------------------------------------
@@ -705,8 +707,38 @@ void escreve_especial(grafo g){
 //
 // o tempo de execução é O(|V(G)|+|E(G)|)
 
-int ordem_perfeita_eliminacao(lista l, grafo g);
+int ordem_perfeita_eliminacao(lista l, grafo g){
+	// monta lista de vizinhos a direita
+	//
+	
+	
+	
+}
 
+
+void monta_vizinhos_a_direita(lista l, grafo g){
+	for (no n= primeiro_no(l);n; n = proximo_no(n)){
+		vertice v = conteudo(n);
+		v->visitado=0;
+	}
+	//percorre a lista de vertices
+	for (no n= primeiro_no(l);n; n = proximo_no(n)){
+		vertice v = conteudo(n);
+		for( no m = primeiro_no(v->arestas_saida); m ; m= proximo_no(m)){
+			aresta e = conteudo(m);
+			
+			if(e->destino->visitado==0){
+				insere_lista(e->destino,v->vizinhos_direita);
+			}
+		}
+		for(no x = primeiro_no(v->vizinhos_direita);x;x->proximo_no(x)){
+			printf("nome vertice: %s \n   ", v->nome);
+				
+		}
+		
+		v->visitado=1;
+	}	
+}
 
 
 
