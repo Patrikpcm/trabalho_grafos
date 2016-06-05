@@ -703,16 +703,27 @@ void escreve_especial(grafo g){
 //
 // o tempo de execução é O(|V(G)|+|E(G)|)
 
-int ordem_perfeita_eliminacao(lista l, grafo g);
-	// monta lista de vizinhos a direita
-	//
+int ordem_perfeita_eliminacao(lista l, grafo g){
+	
+	monta_vizinhos_a_direita(l);
+	
+	for(no x = primeiro_no(l);x;x = proximo_no(x)){
+			vertice ver= conteudo(x);
+			printf("nome vertice: %s \n   ",ver->nome );
+				
+		}
+	
+	
+	
+}
+	
 	
 	
 	
 
 
 
-void monta_vizinhos_a_direita(lista l, grafo g){
+void monta_vizinhos_a_direita(lista l){
 	
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);

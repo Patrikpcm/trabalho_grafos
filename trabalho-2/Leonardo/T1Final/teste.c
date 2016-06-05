@@ -41,7 +41,7 @@ int main(void) {
 
 	lista l = busca_largura_lexicografica(g);
 	
-	monta_vizinhos_a_direita(l,g);
+	monta_vizinhos_a_direita(l);
 
 
 	
