@@ -580,7 +580,6 @@ int cordal(grafo g) {
 
 	float tempo;
 	time_t t_ini,t_fim;
-/* 	
 	t_ini=time(NULL);
 	grafo ng = copia_grafo(g);
 
@@ -611,7 +610,6 @@ int cordal(grafo g) {
 	t_fim = time(NULL);
 	tempo = difftime(t_fim,t_ini);
 	printf("tempo t1: %f \n",tempo);
-	//return !tamanho_lista(ng->vertices);  */
 	
 	t_ini=time(NULL);
 	lista l = busca_largura_lexicografica(g);
