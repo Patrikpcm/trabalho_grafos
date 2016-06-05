@@ -729,7 +729,7 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 			vertice destino= e->destino;
 			printf("entrei2\n");
 			if(destino->visitado==0){
-				insere_lista(e->destino,vizinhos_direita);
+				insere_lista(destino,vizinhos_direita);
 				printf("entrei3\n");
 			}
 		}
