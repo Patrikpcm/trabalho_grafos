@@ -658,7 +658,7 @@ lista busca_largura_lexicografica(grafo g){
 			adiciona_label(x,label_atual);
 		}
 		label_atual--;
-		escreve_vertice(n,(int)tamanho_lista(l));
+		//escreve_vertice(n,(int)tamanho_lista(l));
 		insere_lista(n,retorno);
 		
 	}
@@ -742,7 +742,7 @@ int ordem_perfeita_eliminacao(lista l, grafo g){
 		if(proximo == NULL) break;
 		vertice v2 = conteudo(proximo);
 		if(!vizinhos_v2_contem_v1(v1,v2)) return 0;
-		printf("contem todos \n");
+		
 	}
 	
 	
@@ -802,14 +802,14 @@ void monta_vizinhos_a_direita(lista l){
 				insere_lista(destino,vizinhos_direita);				
 			}
 		}	
-		printf("nome vertice n : %s \n",v->nome );
+		/* //printf("nome vertice n : %s \n",v->nome );
 		
 		lista viz=v->vizinhos_direita;
 		for(no x = primeiro_no(viz);x;x = proximo_no(x)){
 			vertice ver= conteudo(x);
 			printf("	      	nome vertice: %s \n",ver->nome );
 				
-		}
+		} */
 		
 	}	
 }
