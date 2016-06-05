@@ -707,7 +707,7 @@ int ordem_perfeita_eliminacao(lista l, grafo g){
 	
 	monta_vizinhos_a_direita(l);
 		
-	for(no x = primeiro_no(l);x;x = proximo_no(x)){	
+	for(no n = primeiro_no(l);n;n = proximo_no(n)){	
 		vertice v= conteudo(n);
 		lista viz=v->vizinhos_direita;
 		for(no x = primeiro_no(viz);x;x = proximo_no(x)){
@@ -718,7 +718,7 @@ int ordem_perfeita_eliminacao(lista l, grafo g){
 	}
 	
 	
-	
+	return 1;
 }
 	
 	
