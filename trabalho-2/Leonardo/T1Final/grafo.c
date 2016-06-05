@@ -747,7 +747,7 @@ int vizinhos_v2_contem_v1(vertice v1,vertice v2){
 
 //busca o vertice v na lista de vizinhos de v1
 int v_esta_na_lista_vizinhos(vertice v, lista l){
-	for(no m = primeiro_no(vizinhos1);m;m=proximo_no()){
+	for(no m = primeiro_no(l);m;m=proximo_no(m)){
 			vertice p = conteudo(m);
 			if( ! strcmp(v->nome, p->nome) ) return 1;
 	}
