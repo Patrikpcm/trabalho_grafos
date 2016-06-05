@@ -713,11 +713,12 @@ int ordem_perfeita_eliminacao(lista l, grafo g);
 
 
 void monta_vizinhos_a_direita(lista l, grafo g){
+	printf("passei\n");
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);
 		v->visitado=0;
 	}
-	printf("passei");
+	printf("passei\n");
 	//percorre a lista de vertices
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);
