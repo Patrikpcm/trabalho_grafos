@@ -152,17 +152,24 @@ int clique(lista l, grafo g);
 int simplicial(vertice v, grafo g);
 
 //------------------------------------------------------------------------------
-// devolve 1, se g é um grafo cordal ou
+// devolve uma lista de vertices com a ordem dos vértices dada por uma 
+// busca em largura lexicográfica
+
+lista busca_largura_lexicografica(grafo g);
+
+//------------------------------------------------------------------------------
+// devolve 1, se a lista l representa uma 
+//            ordem perfeita de eliminação para o grafo g ou
 //         0, caso contrário
 //
-// um grafo (não direcionado) G é cordal 
-// se e somente se 
-// existe uma permutação 
-//     (v_1, ..., v_n) de V(G)
-// tal que
-//     v_i é simplicial em G - v_1 - ... - v_{i-1}
+// o tempo de execução é O(|V(G)|+|E(G)|)
 
+int ordem_perfeita_eliminacao(lista l, grafo g);
 
+//------------------------------------------------------------------------------
+// devolve 1, se g é um grafo cordal ou
+//         0, caso contrário
 
+int cordal(grafo g);
 
 #endif
