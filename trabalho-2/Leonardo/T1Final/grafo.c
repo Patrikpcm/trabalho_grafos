@@ -20,6 +20,24 @@ static int destroi_aresta( void *ptr );
 
 static int destroi_vertice( void *ptr );
 
+static void monta_vizinhos_a_direita(lista l);
+
+static lista busca_largura_lexicografica(grafo g);
+
+static vertice vertice_maior_label(lista l);
+
+static int label_maior(vertice v, vertice x, int tamanho);
+
+static void adiciona_label(vertice v, int valor);
+
+static int cordal(grafo g);
+
+static void escreve_vertice(vertice v,int tam);
+
+static int vizinhos_v2_contem_v1(vertice v1,vertice v2);
+
+void desvisita_vertices(lista l);
+
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados para representar um grafo
 //
@@ -552,7 +570,8 @@ int simplicial(vertice v, grafo g) {
 
 int cordal(grafo g) {
 
-	if( !g || g->direcionado )
+
+	/* if( !g || g->direcionado )
 		return 0;
 
 	grafo ng = copia_grafo(g);
@@ -581,7 +600,14 @@ int cordal(grafo g) {
 	}
 
 	destroi_grafo( ng );
-	return !tamanho_lista(ng->vertices);
+	return !tamanho_lista(ng->vertices); */
+	
+	
+	
+	lista l = busca_largura_lexicografica(g);
+	return ordem_perfeita_eliminacao(l,g);
+	
+	
 }
 
 //------------------------------------------------------------------------------
@@ -681,20 +707,6 @@ void escreve_vertice(vertice v,int tam){
 }
 
 
-void escreve_especial(grafo g){
-	int tamanho = (int)tamanho_lista(g->vertices);
-	
-	for(no n = primeiro_no(g->vertices); n; n= proximo_no(n)){
-		vertice v= conteudo(n);
-		printf("nome vertice: %s    ", v->nome);
-		for(int i = 0; i< tamanho; ++i){
-			printf("%d,", v->label[i]);
-		}
-		printf("\n");
-	}
-	
-	
-}
 
 //------------------------------------------------------------------------------
 // devolve 1, se a lista l representa uma 
@@ -708,54 +720,70 @@ int ordem_perfeita_eliminacao(lista l, grafo g){
 	monta_vizinhos_a_direita(l);
 		
 	for(no n = primeiro_no(l);n;n = proximo_no(n)){	
-		vertice v= conteudo(n);
-		printf("nome vertice n : %s \n   ",v->nome );
-		lista viz=v->vizinhos_direita;
-		for(no x = primeiro_no(viz);x;x = proximo_no(x)){
-			vertice ver= conteudo(x);
-			printf("nome vertice: %s \n   ",ver->nome );
-				
-		}
+		vertice v1= conteudo(n);
+		no proximo = proximo_no(n);
+		vertice v2 = conteudo(proximo);
+		if(!vizinhos_v2_contem_v1(v1,v2)) return 0;
+		printf("contem todos \n")
 	}
 	
 	
 	return 1;
 }
-	
-	
-	
-	
 
+//verifica se os vertices vizinhos a direita de v2 estão contidos em v1
+int vizinhos_v2_contem_v1(vertice v1,vertice v2){
+	lista vizinhos1 = v1->vizinhos_direita;
+	lista vizinhos2 = v2->vizinhos_direita;
+	
+	for(no n =  primeiro_no(vizinhos2); n ;n=proximo_no(n)){
+		vertice v = conteudo(n);
+		if(!v_esta_na_lista_vizinhos(v,vizinhos1))	return 0;		
+	}
+	
+	return 1;
+	
+}
 
+//busca o vertice v na lista de vizinhos de v1
+int v_esta_na_lista_vizinhos(vertice v, lista l){
+	for(no m = primeiro_no(vizinhos1);m;m=proximo_no()){
+			vertice p = conteudo(m);
+			if( ! strcmp(v->nome, p->nome) ) return 1;
+	}
+	return 0;
+}
 
-void monta_vizinhos_a_direita(lista l){
+	
+	
+	
+void desvisita_vertices(lista l){
 	
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);
 		v->visitado=0;
 	}
+}
+
+
+//Busca os vertices vizinhos a direita do vertice.
+//Isto é, busca os vertices que são vizinhos e não foram visitados
+void monta_vizinhos_a_direita(lista l){
+	
+	desvisita_vertices(l);
 	//percorre a lista de vertices
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);
-		v->visitado=1;
-		v->vizinhos_direita= constroi_lista();
-		for( no m = primeiro_no(v->arestas_saida); m ; m= proximo_no(m)){
-			
+		v->visitado = 1;
+		v->vizinhos_direita = constroi_lista();
+		for( no m = primeiro_no(v->arestas_saida); m ; m = proximo_no(m)){
 			aresta e = conteudo(m);
-			
-			lista vizinhos_direita=v->vizinhos_direita;
-			
-			vertice destino= e->destino;
-			
-			if(destino->visitado==0){
-				
-				insere_lista(destino,vizinhos_direita);
-				
+			lista vizinhos_direita = v->vizinhos_direita;
+			vertice destino = e->destino;
+			if(destino->visitado == 0){				
+				insere_lista(destino,vizinhos_direita);				
 			}
-		}
-		
-		
-		
+		}		
 	}	
 }
 

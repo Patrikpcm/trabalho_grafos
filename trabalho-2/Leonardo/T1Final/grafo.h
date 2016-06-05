@@ -162,17 +162,7 @@ int simplicial(vertice v, grafo g);
 // tal que
 //     v_i é simplicial em G - v_1 - ... - v_{i-1}
 
-lista busca_largura_lexicografica(grafo g);
-vertice vertice_maior_label(lista l);
-int label_maior(vertice v, vertice x, int tamanho);
 
-void adiciona_label(vertice v, int valor);
-
-int cordal(grafo g);
-
-
-void escreve_vertice(vertice v,int tam);
-void escreve_especial(grafo g);
 
 
 #endif
