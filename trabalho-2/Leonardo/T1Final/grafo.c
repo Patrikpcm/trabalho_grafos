@@ -725,13 +725,15 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 		for( no m = primeiro_no(v->arestas_saida); m ; m= proximo_no(m)){
 			
 			aresta e = conteudo(m);
+			v->vizinhos_direita= constroi_lista()
 			lista vizinhos_direita=v->vizinhos_direita;
+			
 			vertice destino= e->destino;
 			printf("entrei2\n");
 			if(destino->visitado==0){
 				printf("entrei3\n");
 				insere_lista(destino,vizinhos_direita);
-				
+				printf("inseri\n");
 			}
 		}
 		
