@@ -721,6 +721,7 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 	//percorre a lista de vertices
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);
+		v->visitado=1;
 		v->vizinhos_direita= constroi_lista();
 		for( no m = primeiro_no(v->arestas_saida); m ; m= proximo_no(m)){
 			
@@ -745,7 +746,7 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 				
 		}
 		
-		v->visitado=1;
+		
 	}	
 }
 
