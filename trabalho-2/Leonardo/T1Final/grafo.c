@@ -706,12 +706,16 @@ void escreve_especial(grafo g){
 int ordem_perfeita_eliminacao(lista l, grafo g){
 	
 	monta_vizinhos_a_direita(l);
-	
-	for(no x = primeiro_no(l);x;x = proximo_no(x)){
+		
+	for(no x = primeiro_no(l);x;x = proximo_no(x)){	
+		vertice v= conteudo(n);
+		lista viz=v->vizinhos_direita;
+		for(no x = primeiro_no(viz);x;x = proximo_no(x)){
 			vertice ver= conteudo(x);
 			printf("nome vertice: %s \n   ",ver->nome );
 				
 		}
+	}
 	
 	
 	
