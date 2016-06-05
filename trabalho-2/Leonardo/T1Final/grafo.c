@@ -713,7 +713,7 @@ int ordem_perfeita_eliminacao(lista l, grafo g);
 
 
 void monta_vizinhos_a_direita(lista l, grafo g){
-	printf("passei\n");
+	
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);
 		v->visitado=0;
@@ -721,7 +721,7 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 	//percorre a lista de vertices
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);
-		printf("entrei\n");
+		
 		for( no m = primeiro_no(v->arestas_saida); m ; m= proximo_no(m)){
 			printf("entrei2\n");
 			aresta e = conteudo(m);
@@ -729,7 +729,7 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 			vertice destino= e->destino;
 			if(destino->visitado==0){
 				insere_lista(e->destino,vizinhos_direita);
-				
+				printf("entrei3\n");
 			}
 		}
 		
