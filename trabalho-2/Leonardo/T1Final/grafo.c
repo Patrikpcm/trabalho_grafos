@@ -718,18 +718,18 @@ void monta_vizinhos_a_direita(lista l, grafo g){
 		vertice v = conteudo(n);
 		v->visitado=0;
 	}
-	printf("passei\n");
 	//percorre a lista de vertices
 	for (no n= primeiro_no(l);n; n = proximo_no(n)){
 		vertice v = conteudo(n);
 		for( no m = primeiro_no(v->arestas_saida); m ; m= proximo_no(m)){
 			aresta e = conteudo(m);
-			
+			lista vizinhos_direita=v->vizinhos_direita;
 			if(e->destino->visitado==0){
-				insere_lista(e->destino,v->vizinhos_direita);
+				insere_lista(e->destino,vizinhos_direita);
+				printf("entrei\n");
 			}
 		}
-		printf("passei");
+		
 		lista viz=v->vizinhos_direita;
 		for(no x = primeiro_no(viz);x;x = proximo_no(x)){
 			vertice ver= conteudo(x);
