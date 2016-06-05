@@ -752,14 +752,7 @@ void monta_vizinhos_a_direita(lista l){
 				
 			}
 		}
-		printf("nome vertice n : %s \n   ",v->nome );
 		
-		lista viz=v->vizinhos_direita;
-		for(no x = primeiro_no(viz);x;x = proximo_no(x)){
-			vertice ver= conteudo(x);
-			printf("nome vertice: %s \n   ",ver->nome );
-				
-		}
 		
 		
 	}	
