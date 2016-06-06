@@ -702,23 +702,27 @@ static void adiciona_label(vertice v, int valor){
 // o tempo de execução é O(|V(G)|+|E(G)|)
 
 int ordem_perfeita_eliminacao(lista l, grafo g){
-	
+
 	if( !l || !g ) return 0;
-
+	
 	monta_vizinhos_a_direita(l);
-		
-	for( no n = primeiro_no(l); n; n = proximo_no(n) ){	
 
+	for(no n = primeiro_no(l);n;n = proximo_no(n)){
+	
 		vertice v1 = conteudo(n);
-		no proximo = proximo_no(n);
-
-		if(proximo == NULL) break;
-
-		vertice v2 = conteudo(proximo);
-		
-		if( !vizinhos_v2_contem_v1(v1,v2) ) 
-			return 0;
+	
+		for (no proximo = proximo_no(n); proximo; proximo = proximo_no(proximo)) {
+			
+			vertice v2 = conteudo(proximo);
+			
+			if( v_esta_na_lista_vizinhos(v2, v1->vizinhos_direita) ) {
+				if( !vizinhos_v2_contem_v1(v2,v1) )
+					return 0;
+				break;
+			}
+		}
 	}
+
 	return 1;
 }
 
