@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 #include <graphviz/cgraph.h>
 #include "grafo.h"
 
@@ -573,19 +572,9 @@ int cordal(grafo g) {
 	 if( !g || g->direcionado )
 		return 0;
 
-//	float tempo;
-//	time_t t_ini,t_fim;
-//	t_ini=time(NULL);
-
 	lista l = busca_largura_lexicografica(g);
 
-	int i = ordem_perfeita_eliminacao(l,g);
-
-//	t_fim = time(NULL);
-//	tempo = difftime(t_fim,t_ini);
-//	printf("tempo t2: %f \n",tempo);
-	
-	return i;
+	return ordem_perfeita_eliminacao(l,g);
 }
 
 
@@ -720,7 +709,7 @@ int ordem_perfeita_eliminacao(lista l, grafo g){
 		
 	for( no n = primeiro_no(l); n; n = proximo_no(n) ){	
 
-		vertice v1= conteudo(n);
+		vertice v1 = conteudo(n);
 		no proximo = proximo_no(n);
 
 		if(proximo == NULL) break;
@@ -814,6 +803,3 @@ static void monta_vizinhos_a_direita(lista l){
 		}	
 	}	
 }
-
-
-
