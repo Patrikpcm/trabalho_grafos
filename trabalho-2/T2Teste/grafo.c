@@ -721,7 +721,7 @@ int ordem_perfeita_eliminacao(lista l, grafo g){
                 for (no proximo = proximo_no(n); proximo; proximo = proximo_no(proximo)) {
                         vertice v2 = conteudo(proximo);
                         if (v_esta_na_lista_vizinhos(v2, v1->vizinhos_direita)) {
-                                if(!vizinhos_v2_contem_v1(v2,v1))
+                                if(!vizinhos_v2_contem_v1(v1,v2))
                                         return 0;
                                 break;
                         }
