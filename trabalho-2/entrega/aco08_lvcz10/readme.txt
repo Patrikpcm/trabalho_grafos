@@ -7,6 +7,13 @@
 		Alexandre Calerio de Oliveira 		GRR20080568
 		Leonardo Vincius Carvalho Zanella	GRR20103241
 
+
+	O trabalho 2 foi feito como continuação do trabalho 1 portanto as 
+	funções implementadas para o trabalho 1 continuam no arquivo grafo.c
+	no entanto não há garantias que as funções do trabalho 1 que "não 
+	constem" no arquivo teste.c continuem funcionando perfeitamente devido
+	as novas estruturas inseridas nos vértices.
+
 	====================================================================
 	==  Estruturas                                                    ==
 	====================================================================

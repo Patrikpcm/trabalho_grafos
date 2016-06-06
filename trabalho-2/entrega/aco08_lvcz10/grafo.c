@@ -6,6 +6,9 @@
 
 typedef struct aresta *aresta;
 
+//----------------------------------------------------------------------
+// Funções do Trabalho 1
+
 static aresta cria_aresta( lista lv, Agedge_t *e );
 
 static aresta copia_aresta( aresta a, grafo ng );
@@ -19,6 +22,24 @@ static vertice busca_vertice( lista l, char *nome );
 static int destroi_aresta( void *ptr );
 
 static int destroi_vertice( void *ptr );
+
+//----------------------------------------------------------------------
+// Funções do Trabalho 2:
+
+static void monta_vizinhos_a_direita(lista l);
+
+static vertice vertice_maior_label(lista l);
+
+static int label_maior(vertice v, vertice x, int tamanho);
+
+static void adiciona_label(vertice v, int valor);
+
+static int vizinhos_v2_contem_v1(vertice v1,vertice v2);
+
+static void desvisita_vertices(lista l);
+
+static int v_esta_na_lista_vizinhos(vertice v, lista l);
+
 
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados para representar um grafo
@@ -47,9 +68,14 @@ struct grafo {
 
 struct vertice {
 
-	char *nome;
-	lista arestas_saida;
-	lista arestas_entrada;
+	char  *nome;
+	lista  arestas_saida;
+	lista  arestas_entrada;
+	lista  vizinhos_direita;
+	int   *label;
+	int    visitado;
+	int    padding; // só pra evitar warning
+	
 };
 
 //------------------------------------------------------------------------------
@@ -60,6 +86,7 @@ struct aresta {
 	vertice	 origem;
 	vertice	 destino;
 };
+
 
 //------------------------------------------------------------------------------
 // Cria e devolve uma estrutura de aresta
@@ -92,6 +119,7 @@ static aresta copia_aresta( aresta a, grafo ng ) {
 	return at;
 }
 
+
 //------------------------------------------------------------------------------
 // Procura por uma aresta em uma lista dados os vértices de origem e destino
 // Retorna o ponteiro para a resta encontrada ou NULL caso contrário
@@ -108,6 +136,7 @@ static aresta busca_aresta( lista l, vertice origem, vertice destino ) {
 	}
 	return NULL;
 }
+
 
 //------------------------------------------------------------------------------
 // Devolve uma lista com as arestas do grafo g
@@ -138,6 +167,7 @@ static lista arestas( grafo g ) {
 	return la;
 }
 
+
 //------------------------------------------------------------------------------
 // Retorna apontador para o vértice com o nome dado como argumento
 // ou NULL caso o vértice for encontrado.
@@ -156,6 +186,7 @@ static vertice busca_vertice(lista l, char *nome) {
 	return NULL;
 }
 
+
 //------------------------------------------------------------------------------
 // Libera a memória ocupada por uma aresta
 
@@ -170,6 +201,7 @@ static int destroi_aresta( void *ptr ){
 	return 0;
 }
 
+
 //------------------------------------------------------------------------------
 // Libera a memória ocupada por um vértice
 
@@ -178,8 +210,9 @@ static int destroi_vertice( void *ptr ){
 	struct vertice *v = ptr;
 
 	if( v ){
-		int e = destroi_lista( v->arestas_entrada, destroi_aresta );
-		int s = destroi_lista( v->arestas_saida,   destroi_aresta );
+		free (v->label);
+		int e = destroi_lista( v->arestas_entrada,  destroi_aresta );
+		int s = destroi_lista( v->arestas_saida,    destroi_aresta );
 		if( e && s ) {
 			free( v );
 			return 1;
@@ -188,12 +221,14 @@ static int destroi_vertice( void *ptr ){
 	return 0;
 }
 
+
 //------------------------------------------------------------------------------
 // devolve o nome do grafo g
 
 char *nome_grafo(grafo g) {
 	return g->nome;
 }
+
 
 //------------------------------------------------------------------------------
 // devolve 1, se g é direcionado, ou
@@ -203,6 +238,7 @@ int direcionado(grafo g) {
 	return g->direcionado;
 }
 
+
 //------------------------------------------------------------------------------
 // devolve 1, se g tem pesos nas arestas/arcos,
 //      ou 0, caso contrário
@@ -211,12 +247,14 @@ int ponderado(grafo g) {
 	return g->ponderado;
 }
 
+
 //------------------------------------------------------------------------------
 // devolve o número de vértices do grafo g
 
 unsigned int n_vertices(grafo g) {
 	return g->n_vertices;
 }
+
 
 //------------------------------------------------------------------------------
 // devolve o número de arestas/arcos do grafo g
@@ -225,12 +263,14 @@ unsigned int n_arestas(grafo g) {
 	return g->n_arestas;
 }
 
+
 //------------------------------------------------------------------------------
 // devolve o nome do vertice v
 
 char *nome_vertice(vertice v) {
 	return v->nome;
 }
+
 
 //------------------------------------------------------------------------------
 // lê um grafo no formato dot de input, usando as rotinas de libcgraph
@@ -255,7 +295,6 @@ grafo le_grafo(FILE *input) {
     if(!(ag && agisstrict(ag)))
         return NULL;
 
-//	struct grafo *g = malloc(sizeof(struct grafo));
 	grafo g = malloc(sizeof(struct grafo));
     if( !g ) return NULL;
 
@@ -309,6 +348,7 @@ grafo le_grafo(FILE *input) {
 	return g;
 }
 
+
 //------------------------------------------------------------------------------
 // desaloca toda a memória usada em *g
 //
@@ -331,6 +371,7 @@ int destroi_grafo(void *g) {
 	}
 	return 0;
 }
+
 
 //------------------------------------------------------------------------------
 // escreve o grafo g em output usando o formato dot, de forma que
@@ -375,6 +416,7 @@ grafo escreve_grafo(FILE *output, grafo g) {
 
     return g;
 }
+
 
 //------------------------------------------------------------------------------
 // Devolve um grafo igual a g
@@ -430,6 +472,7 @@ grafo copia_grafo(grafo g) {
 	return ng;
 }
 
+
 //------------------------------------------------------------------------------
 // devolve a vizinhança do vértice v no grafo g
 //
@@ -466,6 +509,7 @@ lista vizinhanca(vertice v, int direcao, grafo g) {
 	return lv;
 }
 
+
 //------------------------------------------------------------------------------
 // devolve o grau do vértice v no grafo g
 //
@@ -489,6 +533,7 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 	}
 	return 0;	// evita warning
 }
+
 
 //------------------------------------------------------------------------------
 // devolve 1, se o conjunto dos vertices em l é uma clique em g, ou
@@ -535,48 +580,247 @@ int simplicial(vertice v, grafo g) {
 	return clique(l,g);
 }
 
+
 //------------------------------------------------------------------------------
 // devolve 1, se g é um grafo cordal ou
 //         0, caso contrário
 //
-// um grafo (não direcionado) G é cordal
-// se e somente se
-// existe uma permutação
-//     (v_1, ..., v_n) de V(G)
-// tal que
-//     v_i é simplicial em G - v_1 - ... - v_{i-1}
 
 int cordal(grafo g) {
 
-	if( !g || g->direcionado )
+	 if( !g || g->direcionado )
 		return 0;
 
-	grafo ng = copia_grafo(g);
+	lista l = busca_largura_lexicografica(g);
 
-	lista lvg   = ng->vertices;
-	int removeu = 1;
+	return ordem_perfeita_eliminacao(l,g);
+}
 
-	while( tamanho_lista(lvg) > 0 && removeu ){
-		removeu = 0 ;
-		for( no n = primeiro_no(lvg); n; n = proximo_no(n) ){
-			vertice vs = conteudo(n);
-			if( simplicial(vs, ng) ){
-				lista lvv = vizinhanca(vs, 0, ng);
-				for( no m = primeiro_no(lvv); m; m = proximo_no(m) ){
-					vertice vv = conteudo(m);
-					for( no r = primeiro_no(vv->arestas_saida); r; r = proximo_no(r) ){
-						aresta a = conteudo(r);
-						if( (a->origem == vs) || (a->destino == vs) )	
-							remove_no( vv->arestas_saida , r, destroi_aresta );
-					}
-				}
-				removeu = remove_no( lvg , n, destroi_vertice );
+
+//------------------------------------------------------------------------------
+// Devolve uma lista de vertices com a ordem dos vértices dada por uma 
+// busca em largura lexicográfica
+
+lista busca_largura_lexicografica(grafo g){
+
+	lista retorno = constroi_lista();
+
+	lista l = g->vertices;
+
+	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
+
+		vertice v= conteudo(n);
+		v->label = malloc(sizeof(int) * tamanho_lista(l));
+
+		for( int i = 0; i< (int)tamanho_lista(l); ++i ){
+			v->label[i] = 0;			
+		}
+		v-> visitado = 0;
+	}
+	
+	int label_atual = (int)tamanho_lista(g->vertices);
+	
+	no aux = primeiro_no(l);
+	
+	vertice primeiro = conteudo(aux);
+	
+	primeiro->label[0] = label_atual;
+	label_atual--;
+	
+	vertice n;
+	
+	while( (n = vertice_maior_label(l)) != NULL){
+		
+		n->visitado = 1;
+		lista vizinhos = vizinhanca(n,0,g);
+		
+		for( no m = primeiro_no(vizinhos); m ; m = proximo_no(m) ){
+			vertice x = conteudo(m);
+			adiciona_label(x,label_atual);
+		}
+		label_atual--;
+		insere_lista(n,retorno);		
+	}
+	
+	return retorno;
+}
+
+
+//------------------------------------------------------------------------------
+// Busca o vertice com o maior label lexicografico
+//
+
+static vertice vertice_maior_label(lista l){
+	
+	no aux = primeiro_no(l);
+	vertice retorno = conteudo(aux);
+
+	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
+		
+		vertice v = conteudo(n);
+
+		if( v->visitado == 0 ){			
+			retorno = v;
+			break;
+		}
+	}
+
+	for( no n = primeiro_no(l); n ; n = proximo_no(n)){
+
+		vertice v = conteudo(n);
+
+		if( v->visitado == 0 ){
+			if( label_maior(retorno,v,(int)tamanho_lista(l)) )
+				retorno = v;	
+		}
+	}	
+	
+	return retorno->visitado == 1 ? NULL : retorno;	
+}
+
+
+//------------------------------------------------------------------------------
+// Retorna 0 se v é maior, e 1 se x é maior
+//
+
+static int label_maior(vertice v, vertice x, int tamanho){
+	
+	for( int i = 0; i<tamanho; ++i ){
+
+		if( v->label[i] != x->label[i] ){
+
+			if( v->label[i] > x->label[i] )
+				 return 0;
+			else return 1;
+		
+		}
+	}
+	return 0;	
+}
+
+
+//------------------------------------------------------------------------------
+// Adiciona um rótulo na lista de rótulos do vértice
+//
+
+static void adiciona_label(vertice v, int valor){
+
+	int i = 0;
+	
+	while( v->label[i] > 0 ) ++i;
+
+	v->label[i] = valor;
+}
+
+
+//------------------------------------------------------------------------------
+// devolve 1, se a lista l representa uma 
+//            ordem perfeita de eliminação para o grafo g ou
+//         0, caso contrário
+//
+// o tempo de execução é O(|V(G)|+|E(G)|)
+
+int ordem_perfeita_eliminacao(lista l, grafo g){
+
+	if( !l || !g ) return 0;
+	
+	monta_vizinhos_a_direita(l);
+
+	for(no n = primeiro_no(l); n; n = proximo_no(n)){
+		vertice v1 = conteudo(n);
+
+		for(no prox = proximo_no(n); prox; prox = proximo_no(prox)){
+			vertice v2 = conteudo(prox);
+
+			if( v_esta_na_lista_vizinhos(v2, v1->vizinhos_direita) ){
+				if( !vizinhos_v2_contem_v1(v2,v1) )
+					return 0;
 				break;
 			}
 		}
 	}
 
-	destroi_grafo( ng );
-	return !tamanho_lista(ng->vertices);
+	return 1;
 }
 
+
+//------------------------------------------------------------------------------
+// Verifica se os vertices vizinhos a direita de v2 estão contidos na
+// vizinhança de v1
+//
+
+static int vizinhos_v2_contem_v1(vertice v1, vertice v2){
+
+	lista vizinhos1 = v1->vizinhos_direita;
+	lista vizinhos2 = v2->vizinhos_direita;
+	
+	for( no n = primeiro_no(vizinhos2); n; n=proximo_no(n) ){
+		
+		vertice v = conteudo(n);
+		
+		if (v == v1) continue;
+		
+		if( !v_esta_na_lista_vizinhos(v,vizinhos1) )
+			return 0;		
+	}
+	
+	return 1;
+}
+
+
+//------------------------------------------------------------------------------
+// Busca o vertice v na lista de vizinhos de v1
+//
+
+static int v_esta_na_lista_vizinhos(vertice v, lista l){
+	
+	for( no m = primeiro_no(l); m; m = proximo_no(m) ){
+		
+		vertice p = conteudo(m);
+		if( !strcmp(v->nome, p->nome) ) 
+			return 1;
+	}
+	return 0;
+}
+
+	
+//------------------------------------------------------------------------------
+// Reverte o status de visitado de todos os vértices da lista l
+//
+	
+static void desvisita_vertices(lista l){
+	
+	for( no n= primeiro_no(l); n; n = proximo_no(n) ){
+		vertice v = conteudo(n);
+		v->visitado = 0;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+// Busca os vertices vizinhos a direita do vertice.
+// Isto é, busca os vertices que são vizinhos e não foram visitados
+
+static void monta_vizinhos_a_direita(lista l){
+	
+	desvisita_vertices(l);
+	
+	//percorre a lista de vertices
+	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
+
+		vertice v = conteudo(n);
+		v->visitado = 1;
+		v->vizinhos_direita = constroi_lista();
+
+		for( no m = primeiro_no(v->arestas_saida); m; m = proximo_no(m) ){
+			
+			aresta e = conteudo(m);
+			lista vizinhos_direita = v->vizinhos_direita;
+			
+			vertice destino = e->destino == v ? e->origem : e->destino;
+			
+			if( destino->visitado == 0 )
+				insere_lista(destino,vizinhos_direita);
+		}	
+	}	
+}
