@@ -735,7 +735,8 @@ int ordem_perfeita_eliminacao(lista l, grafo g){
 
 
 //------------------------------------------------------------------------------
-// Verifica se os vertices vizinhos a direita de v2 estão contidos em v1
+// Verifica se os vertices vizinhos a direita de v2 estão contidos na
+// vizinhança de v1
 //
 
 static int vizinhos_v2_contem_v1(vertice v1, vertice v2){
@@ -746,6 +747,9 @@ static int vizinhos_v2_contem_v1(vertice v1, vertice v2){
 	for( no n = primeiro_no(vizinhos2); n; n=proximo_no(n) ){
 		
 		vertice v = conteudo(n);
+		
+		if (v == v1) continue;
+		
 		if( !v_esta_na_lista_vizinhos(v,vizinhos1) )
 			return 0;		
 	}
@@ -803,7 +807,7 @@ static void monta_vizinhos_a_direita(lista l){
 			aresta e = conteudo(m);
 			lista vizinhos_direita = v->vizinhos_direita;
 			
-			vertice destino = e->destino;
+			vertice destino = e->destino == v ? e->origem : e->destino;
 			
 			if( destino->visitado == 0 )
 				insere_lista(destino,vizinhos_direita);
