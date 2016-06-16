@@ -1,0 +1,6 @@
+
+Especificação:
+
+O objetivo deste trabalho é implementar uma subrotina que computa um emparelhamento máximo em um grafo bipartido.
+
+( só isso!?!? )
