@@ -542,15 +542,15 @@ grafo escreve_grafo(FILE *output, grafo g) {
 	aresta  a;
 	no nv, na;
 
-    fprintf( output, "strict %sgraph \"%s\" {\n\n", g->direcionado ? "di" : "", g->nome );
+    printf("strict %sgraph \"%s\" {\n\n", g->direcionado ? "di" : "", g->nome);
 
     // Imprime vertices
 
 	for( nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) ){
 		v = conteudo(nv);
-		fprintf( output, "    \"%s\"\n", v->nome );
+		printf("    \"%s\"\n", v->nome);
 	}
-	fprintf( output, "\n" );
+	printf("\n");
 
     // Imprime arestas
 
@@ -558,11 +558,11 @@ grafo escreve_grafo(FILE *output, grafo g) {
 	const char *dir = g->direcionado ? "->" : "--";
 	for( na = primeiro_no(la); na; na = proximo_no(na) ){
 		a = conteudo(na);
-		fprintf( output, "    \"%s\" %s \"%s\"", nome_vertice(a->origem), dir, nome_vertice(a->destino) );
-		if( g->ponderado ) fprintf( output, " [peso=%ld]", a->peso );
-		fprintf( output, "\n" );
+		printf("    \"%s\" %s \"%s\"", nome_vertice(a->origem), dir, nome_vertice(a->destino));
+		if( g->ponderado ) printf(" [peso=%ld]", a->peso);
+		printf("\n");
 	}
-    fprintf( output, "}\n" );
+    printf("}\n");
 
     return g;
 }

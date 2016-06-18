@@ -2,10 +2,6 @@
 #define _GRAFO_H
 
 #include <stdio.h>
-#include "lista.h"
-
-
-/***********************************************************************
 
 //-----------------------------------------------------------------------------
 // (apontador para) lista encadeada
@@ -73,9 +69,6 @@ int destroi_lista(lista l, int destroi(void *));
 //         0, se rno não for um no de l
 
 int remove_no(struct lista *l, struct no *rno, int destroi(void *));
-
-***********************************************************************/
-
 
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados para representar um grafo
