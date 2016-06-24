@@ -700,10 +700,38 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 // não verifica se g é bipartido; caso não seja, o comportamento é indefinido
 
 grafo emparelhamento_maximo(grafo g){
-	
-
+/*
+	enquanto (l = caminho_aumentante(g)) {
+		xor(l);
+	}
+	grafo e = novo_grafo();
+	copia_vertices(e,g);
+	copia_arestas_cobertas(e,g);
+	return e;
+*/
 	return g;
 }
+
+/*
+int busca_caminho(v, l, last) {
+  
+	//* essa função é chamada pela função que tenta achar um caminho aumentante 
+	//* pra cada vértice não coberto (e retorna assim que achar)
+	//* e last é inicialmente 1, pois a primeira aresta será 0 (não coberta) 
+
+	if (!v->coberto && !v->visitado)
+		return true;
+	v->visitado = 1;
+	for arestas de v {
+		if (a->coberta != last)
+			if (!vizinho->visitado && busca_caminho(vizinho, l, !last)) {
+				insere_lista(a, l);
+				return true;
+			}
+	}
+	return false;
+}
+*/
 
 // =============================================================================
 // === FIM : Funções implementadas referentes a definição do trabalho 3 ========
