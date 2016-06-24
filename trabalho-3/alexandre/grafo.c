@@ -62,6 +62,8 @@ struct grafo {
 struct vertice {
 
 	char *nome;
+	int   visitado;
+	int   coberto;
 	lista arestas_saida;
 	lista arestas_entrada;
 };
@@ -71,6 +73,8 @@ struct vertice {
 struct aresta {
 
 	long int peso;
+	int      visitada;
+	int      coberta;
 	vertice	 origem;
 	vertice	 destino;
 };
@@ -93,11 +97,13 @@ static aresta cria_aresta( lista lv, Agedge_t *e ){
 
 	char *findme = malloc(sizeof(char) * strlen("peso\0")+1);
 	strcpy( findme, "peso\0" );
-	aresta a   = malloc(sizeof(struct aresta));
-	a->origem  = busca_vertice(lv, agnameof(agtail(e)));
-	a->destino = busca_vertice(lv, agnameof(aghead(e)));
-	char *peso = agget( e, findme );
-	a->peso    = peso ? strtol(peso,NULL,10) : 0;
+	aresta a    = malloc(sizeof(struct aresta));
+	a->visitada = 0;
+	a->coberta  = 0; 
+	a->origem   = busca_vertice(lv, agnameof(agtail(e)));
+	a->destino  = busca_vertice(lv, agnameof(aghead(e)));
+	char *peso  = agget( e, findme );
+	a->peso     = peso ? strtol(peso,NULL,10) : 0;
 	free(findme);
 	return a;
 }
@@ -109,10 +115,12 @@ static aresta cria_aresta( lista lv, Agedge_t *e ){
 
 static aresta copia_aresta( aresta a, grafo ng ) {
 
-	aresta at   = malloc(sizeof(struct aresta)+1);
-	at->peso    = a->peso;
-	at->origem  = busca_vertice(ng->vertices, nome_vertice(a->origem));
-	at->destino = busca_vertice(ng->vertices, nome_vertice(a->destino));
+	aresta at    = malloc(sizeof(struct aresta)+1);
+	at->peso     = a->peso;
+	at->visitada = a->visitada;
+	at->coberta  = a->coberta; 
+	at->origem   = busca_vertice(ng->vertices, nome_vertice(a->origem));
+	at->destino  = busca_vertice(ng->vertices, nome_vertice(a->destino));
 	return at;
 }
 
@@ -227,17 +235,17 @@ static int destroi_vertice( void *ptr ){
 
 struct no {
 
-  void *conteudo;
-  no    proximo;
+	void *conteudo;
+	no    proximo;
 };
 //---------------------------------------------------------------------------
 // lista encadeada
 
 struct lista {
 
-  unsigned int tamanho;
-  int          padding; // só pra evitar warning
-  no           primeiro;
+	unsigned int tamanho;
+	int          padding; // só pra evitar warning
+	no           primeiro;
 };
 
 //---------------------------------------------------------------------------
@@ -278,15 +286,14 @@ no proximo_no(no n) {
 
 lista constroi_lista(void) {
 
-  lista l = malloc(sizeof(struct lista));
+	lista l = malloc(sizeof(struct lista));
 
-  if ( ! l )
-    return NULL;
+	if ( ! l ) return NULL;
 
-  l->primeiro = NULL;
-  l->tamanho  = 0;
+	l->primeiro = NULL;
+	l->tamanho  = 0;
 
-  return l;
+	return l;
 }
 //---------------------------------------------------------------------------
 // desaloca a lista l e todos os seus nós
@@ -302,22 +309,17 @@ lista constroi_lista(void) {
 
 int destroi_lista(lista l, int destroi(void *)) {
 
-  no  p;
-  int ok = 1;
+	no  p;
+	int ok = 1;
 
-  while ( (p = primeiro_no(l)) ) {
-
-    l->primeiro = proximo_no(p);
-
-    if ( destroi )
-        ok &= destroi(conteudo(p));
-
-    free(p);
-  }
-
-  free(l);
-
-  return ok;
+	while ( (p = primeiro_no(l)) ) {
+		l->primeiro = proximo_no(p);
+		if ( destroi )
+			ok &= destroi(conteudo(p));
+		free(p);
+	}
+	free(l);
+	return ok;
 }
 //---------------------------------------------------------------------------
 // insere um novo nó na lista l cujo conteúdo é p
@@ -327,15 +329,15 @@ int destroi_lista(lista l, int destroi(void *)) {
 
 no insere_lista(void *conteudo, lista l) {
 
-  no novo = malloc(sizeof(struct no));
+	no novo = malloc(sizeof(struct no));
 
-  if ( ! novo ) return NULL;
+	if ( ! novo ) return NULL;
 
-  novo->conteudo = conteudo;
-  novo->proximo = primeiro_no(l);
-  ++l->tamanho;
+	novo->conteudo = conteudo;
+	novo->proximo = primeiro_no(l);
+	++l->tamanho;
 
-  return l->primeiro = novo;
+	return l->primeiro = novo;
 }
 
 //------------------------------------------------------------------------------
@@ -345,7 +347,9 @@ no insere_lista(void *conteudo, lista l) {
 //         0, se rno não for um no de l
 
 int remove_no(struct lista *l, struct no *rno, int destroi(void *)) {
+
 	int r = 1;
+
 	if (l->primeiro == rno) {
 		l->primeiro = rno->proximo;
 		if (destroi != NULL) {
@@ -355,6 +359,7 @@ int remove_no(struct lista *l, struct no *rno, int destroi(void *)) {
 		l->tamanho--;
 		return r;
 	}
+
 	for (no n = primeiro_no(l); n->proximo; n = proximo_no(n)) {
 		if (n->proximo == rno) {
 			n->proximo = rno->proximo;
@@ -366,6 +371,7 @@ int remove_no(struct lista *l, struct no *rno, int destroi(void *)) {
 			return r;
 		}
 	}
+	
 	return 0;
 }
 
@@ -463,6 +469,8 @@ grafo le_grafo(FILE *input) {
 		vertice vt = malloc(sizeof(struct vertice));
 		vt->nome   = malloc(sizeof(char) * strlen(agnameof(v))+1);
 		strcpy( vt->nome, agnameof(v) );
+		vt->visitado = 0;
+		vt->coberto  = 0;
 		vt->arestas_saida   = constroi_lista();
 		vt->arestas_entrada = constroi_lista();
 
@@ -589,6 +597,8 @@ grafo copia_grafo(grafo g) {
 		v = conteudo(nv);
 		vt->nome = malloc(sizeof(char) * strlen(nome_vertice(v))+1);
 		strcpy(vt->nome, nome_vertice(v));
+		vt->visitado = v->visitado;
+		vt->coberto  = v->coberto;
 		vt->arestas_saida   = constroi_lista();
 		vt->arestas_entrada = constroi_lista();
 
@@ -700,6 +710,8 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 // não verifica se g é bipartido; caso não seja, o comportamento é indefinido
 
 grafo emparelhamento_maximo(grafo g){
+	
+	grafo e = copia_grafo(g);
 /*
 	enquanto (l = caminho_aumentante(g)) {
 		xor(l);
@@ -709,15 +721,15 @@ grafo emparelhamento_maximo(grafo g){
 	copia_arestas_cobertas(e,g);
 	return e;
 */
-	return g;
+	return e;
 }
 
 /*
 int busca_caminho(v, l, last) {
   
-	//* essa função é chamada pela função que tenta achar um caminho aumentante 
-	//* pra cada vértice não coberto (e retorna assim que achar)
-	//* e last é inicialmente 1, pois a primeira aresta será 0 (não coberta) 
+    // essa função é chamada pela função que tenta achar um caminho aumentante 
+	// pra cada vértice não coberto (e retorna assim que achar)
+	// e last é inicialmente 1, pois a primeira aresta será 0 (não coberta) 
 
 	if (!v->coberto && !v->visitado)
 		return true;
