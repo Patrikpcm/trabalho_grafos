@@ -24,6 +24,8 @@ static int destroi_aresta( void *ptr );
 
 static int destroi_vertice( void *ptr );
 
+static grafo novo_grafo( char *nome );
+
 // =============================================================================
 // === FIM : Escopos de estrutura de dados e funções auxiliares ================
 // =============================================================================
@@ -702,6 +704,47 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 // =============================================================================
 
 //------------------------------------------------------------------------------
+// Devolve um grafo vazio ou null em caso de erro
+
+static grafo novo_grafo(char *nome) {
+    
+	grafo ng = malloc(sizeof(struct grafo));
+    if( !ng ) return NULL;
+
+	ng->vertices = constroi_lista();
+    ng->nome = malloc(sizeof(char) * strlen(nome)+1);
+    strcpy(ng->nome, nome);
+    ng->direcionado = 0;
+    ng->ponderado   = 0;
+    ng->n_vertices  = 0;
+    ng->n_arestas   = 0;
+
+    return ng;
+}
+
+/*
+int busca_caminho(v, l, last) {
+  
+    // essa função é chamada pela função que tenta achar um caminho aumentante 
+	// pra cada vértice não coberto (e retorna assim que achar)
+	// e last é inicialmente 1, pois a primeira aresta será 0 (não coberta) 
+
+	if ( !v->coberto && !v->visitado )
+		return true;
+	v->visitado = 1;
+	for arestas de v {
+		if (a->coberta != last)
+			if (!vizinho->visitado && busca_caminho(vizinho, l, !last)) {
+				insere_lista(a, l);
+				return true;
+			}
+	}
+	return false;
+}
+ 
+*/
+
+//------------------------------------------------------------------------------
 // devolve um grafo cujos vertices são cópias de vértices do grafo
 // bipartido g e cujas arestas formam um emparelhamento máximo em g
 //
@@ -711,7 +754,12 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 
 grafo emparelhamento_maximo(grafo g){
 	
-	grafo e = copia_grafo(g);
+    if( !g ) return NULL;
+    
+	grafo e = novo_grafo(nome_grafo(g));
+    if( !e ) return NULL;
+    
+    
 /*
 	enquanto (l = caminho_aumentante(g)) {
 		xor(l);
@@ -724,26 +772,6 @@ grafo emparelhamento_maximo(grafo g){
 	return e;
 }
 
-/*
-int busca_caminho(v, l, last) {
-  
-    // essa função é chamada pela função que tenta achar um caminho aumentante 
-	// pra cada vértice não coberto (e retorna assim que achar)
-	// e last é inicialmente 1, pois a primeira aresta será 0 (não coberta) 
-
-	if (!v->coberto && !v->visitado)
-		return true;
-	v->visitado = 1;
-	for arestas de v {
-		if (a->coberta != last)
-			if (!vizinho->visitado && busca_caminho(vizinho, l, !last)) {
-				insere_lista(a, l);
-				return true;
-			}
-	}
-	return false;
-}
-*/
 
 // =============================================================================
 // === FIM : Funções implementadas referentes a definição do trabalho 3 ========
