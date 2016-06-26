@@ -5,21 +5,28 @@
 
 int main(void) {
 
-  grafo g = le_grafo(stdin);
+	grafo g = le_grafo(stdin);
 
-  if ( !g )
+	if ( !g ) return 1;
 
-    return 1;
+	printf("\nGrafo lido:\n");
+	printf("nome: %s\n",       nome_grafo(g));
+	printf("%s direcionado\n", direcionado(g) ? "" : "não");
+	printf("%s ponderado\n",   ponderado(g)   ? "" : "não");
+	printf("%d vértices\n",    n_vertices(g));
+	printf("%d arestas\n",     n_arestas(g));
+	
+	grafo e = emparelhamento_maximo(g);
+	printf("\nEmparelhamento Máximo:\n");
+	
+	printf("nome: %s\n",       nome_grafo(e));
+	printf("%s direcionado\n", direcionado(e) ? "" : "não");
+	printf("%s ponderado\n",   ponderado(e)   ? "" : "não");
+	printf("%d vértices\n",    n_vertices(e));
+	printf("%d arestas\n",     n_arestas(e));
+	printf("\n");
+	
+	escreve_grafo(stdout, e);
 
-  printf("nome: %s\n", nome_grafo(g));
-  int d = direcionado(g);
-  printf("%sdirecionado\n", d ? "" : "não ");
-  printf("%sponderado\n", ponderado(g) ? "" : "não ");
-  printf("%d vértices\n", n_vertices(g));
-  printf("%d arestas\n", n_arestas(g));
-
-  grafo emparelhamento = emparelhamento_maximo(g);
-  escreve_grafo(stdout,emparelhamento);
-  
-  return ! (destroi_grafo(emparelhamento) && destroi_grafo(g));
+	return ! (destroi_grafo(e) && destroi_grafo(g));
 }
