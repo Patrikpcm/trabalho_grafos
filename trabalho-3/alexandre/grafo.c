@@ -26,6 +26,12 @@ static int destroi_vertice( void *ptr );
 
 static grafo novo_grafo( char *nome );
 
+static int busca_caminho(vertice v, lista l, int last);
+
+static lista caminho_aumentante(grafo g);
+
+static void xor(lista l);
+
 // =============================================================================
 // === FIM : Escopos de estrutura de dados e funções auxiliares ================
 // =============================================================================
@@ -722,27 +728,68 @@ static grafo novo_grafo(char *nome) {
     return ng;
 }
 
-/*
-int busca_caminho(v, l, last) {
+//------------------------------------------------------------------------------
+//
+static int busca_caminho(vertice v, lista l, int last) {
   
-    // essa função é chamada pela função que tenta achar um caminho aumentante 
-	// pra cada vértice não coberto (e retorna assim que achar)
-	// e last é inicialmente 1, pois a primeira aresta será 0 (não coberta) 
+// essa função é chamada pela função que tenta achar um caminho aumentante 
+// pra cada vértice não coberto (e retorna assim que achar)
+// e last é inicialmente 1, pois a primeira aresta será 0 (não coberta) 
 
 	if ( !v->coberto && !v->visitado )
-		return true;
+		return 1; // true
 	v->visitado = 1;
-	for arestas de v {
+	lista la = v->arestas_saida;
+	//for arestas de v {
+	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
+		aresta  a = conteudo(n);
 		if (a->coberta != last)
-			if (!vizinho->visitado && busca_caminho(vizinho, l, !last)) {
+			continue;
+		vertice outro = a->origem == v ? a->destino : a->origem;
+		if( ! outro->visitado ){
+			if (!vizinho->visitado && busca_caminho(outro, l, !last)) {
 				insere_lista(a, l);
-				return true;
+				return 1; // true
 			}
+		}
 	}
-	return false;
+	return 0; //false
 }
- 
-*/
+
+//------------------------------------------------------------------------------
+//
+static lista caminho_aumentante(grafo g) {
+
+	if( !g ) return NULL;
+	lista la = constroi_lista();
+	
+	for v in g->vertices {
+		se v->coberto == 0
+			l = constroi_lista();
+			v->visitado = 1
+			if( busca (v, l, 1) )
+				return l
+			else
+				desvisita_vertices(g)
+				destroi_lista(l, NULL)
+	}
+	desvisita_vertices(g)
+	
+	return la; // ?
+} 
+
+//------------------------------------------------------------------------------
+//
+static void xor(lista la) {
+
+	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
+		aresta  a = conteudo(n);
+		a->coberta = !a->coberta;
+		a->origem->coberto  = 1;
+		a->destino->coberto = 1;
+	}
+	return;
+}
 
 //------------------------------------------------------------------------------
 // devolve um grafo cujos vertices são cópias de vértices do grafo
@@ -759,16 +806,14 @@ grafo emparelhamento_maximo(grafo g){
 	grafo e = novo_grafo(nome_grafo(g));
     if( !e ) return NULL;
     
-    
-/*
-	enquanto (l = caminho_aumentante(g)) {
-		xor(l);
+    lista  lv;
+	while((lv = caminho_aumentante(g)) != NULL) {
+		xor(lv);
+		destroi_lista(lv, NULL);
 	}
-	grafo e = novo_grafo();
-	copia_vertices(e,g);
-	copia_arestas_cobertas(e,g);
-	return e;
-*/
+//	grafo e = novo_grafo();
+//	copia_vertices(e,g);
+//	copia_arestas_cobertas(e,g);
 	return e;
 }
 
