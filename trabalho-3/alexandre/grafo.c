@@ -24,13 +24,15 @@ static int destroi_aresta( void *ptr );
 
 static int destroi_vertice( void *ptr );
 
-static grafo novo_grafo( char *nome );
-
 static int busca_caminho(vertice v, lista l, int last);
 
 static lista caminho_aumentante(grafo g);
 
 static void xor(lista l);
+
+static void desvisita_vertices(grafo g);
+
+static grafo grafo_emparelhamento(grafo g, lista l);
 
 // =============================================================================
 // === FIM : Escopos de estrutura de dados e funções auxiliares ================
@@ -710,25 +712,6 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 // =============================================================================
 
 //------------------------------------------------------------------------------
-// Devolve um grafo vazio ou null em caso de erro
-
-static grafo novo_grafo(char *nome) {
-    
-	grafo ng = malloc(sizeof(struct grafo));
-    if( !ng ) return NULL;
-
-	ng->vertices = constroi_lista();
-    ng->nome = malloc(sizeof(char) * strlen(nome)+1);
-    strcpy(ng->nome, nome);
-    ng->direcionado = 0;
-    ng->ponderado   = 0;
-    ng->n_vertices  = 0;
-    ng->n_arestas   = 0;
-
-    return ng;
-}
-
-//------------------------------------------------------------------------------
 //
 static int busca_caminho(vertice v, lista l, int last) {
   
@@ -761,20 +744,24 @@ static int busca_caminho(vertice v, lista l, int last) {
 static lista caminho_aumentante(grafo g) {
 
 	if( !g ) return NULL;
-	lista la = constroi_lista();
+    
+    lista l = constroi_lista();
 	
-	for v in g->vertices {
-		se v->coberto == 0
-			l = constroi_lista();
+	//for v in g->vertices {
+    for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
+        vertice v = conteudo(n);
+		if( v->coberto == 0 ) {
 			v->visitado = 1
-			if( busca (v, l, 1) )
+			if( busca_caminho(v, l, 1) ) {
 				return l
-			else
-				desvisita_vertices(g)
-				destroi_lista(l, NULL)
+            }
+			else {
+				desvisita_vertices(g);
+				destroi_lista(l, NULL);
+            }
+        }
 	}
-	desvisita_vertices(g)
-	
+	desvisita_vertices(g);
 	return la; // ?
 } 
 
@@ -792,6 +779,57 @@ static void xor(lista la) {
 }
 
 //------------------------------------------------------------------------------
+//
+static void desvisita_vertices(grafo g) {
+    
+    for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
+        vertice v = conteudo(n);
+        v->visitado = 0;
+    }
+    return;
+}
+
+//------------------------------------------------------------------------------
+//
+static grafo grafo_emparelhamento(grafo g) {
+    
+    grafo e = malloc(sizeof(struct grafo));
+    if( !e ) return NULL;
+
+    e->nome = malloc(sizeof(char) * strlen(g->nome)+1);
+    strcpy(e->nome,  g->nome);
+    e->direcionado = g->direcionado;
+    e->ponderado   = g->ponderado;
+    e->vertices = constroi_lista();	
+    for( nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) ){
+		vertice ve = malloc(sizeof(struct vertice));
+		vg = conteudo(nv);
+		ve->nome = malloc(sizeof(char) * strlen(nome_vertice(vg))+1);
+		strcpy(ve->nome, nome_vertice(vg));
+		ve->visitado = 0;
+		ve->coberto  = vg->coberto;
+		ve->arestas_saida   = constroi_lista();
+		ve->arestas_entrada = constroi_lista();
+		insere_lista(ve, e->vertices);
+	}
+    e->n_vertices = tamanho_lista(e->vertices);
+    e->n_arestas  = 0;
+	for( nv = primeiro_no(e->vertices); nv; nv = proximo_no(nv) ){
+		vertice ve = conteudo(nv);
+        vertice vg = busca_vertice(g->vertices, nome_vertice(ve));
+        for( na = primeiro_no(vg->arestas_saida); na; na = proximo_no(na) ){
+			ag = conteudo(na);
+            if( ag->coberta ){
+                aresta ae = copia_aresta( ag, e );
+                insere_lista(ae, ve->arestas_saida);
+            }
+		}
+        e->n_arestas += tamanho_lista(ve->arestas_saida);
+    }
+    return e;
+}
+
+//------------------------------------------------------------------------------
 // devolve um grafo cujos vertices são cópias de vértices do grafo
 // bipartido g e cujas arestas formam um emparelhamento máximo em g
 //
@@ -803,18 +841,19 @@ grafo emparelhamento_maximo(grafo g){
 	
     if( !g ) return NULL;
     
-	grafo e = novo_grafo(nome_grafo(g));
-    if( !e ) return NULL;
-    
     lista  lv;
 	while((lv = caminho_aumentante(g)) != NULL) {
 		xor(lv);
 		destroi_lista(lv, NULL);
 	}
+    
+
+    
 //	grafo e = novo_grafo();
 //	copia_vertices(e,g);
 //	copia_arestas_cobertas(e,g);
-	return e;
+	
+    return grafo_emparelhamento(g);
 }
 
 
