@@ -24,7 +24,7 @@ int main(void) {
 	
 	printf("%d arestas\n",  n_arestas(g));
 
-	//escreve_grafo(stdout, g);
+	escreve_grafo(stdout, g);
 
 	if (!d)  printf("\n%s %s é cordal\n", nome_grafo(g), cordal(g) ? "" : "não");
 

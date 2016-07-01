@@ -85,6 +85,7 @@ struct aresta {
 	long int peso;
 	vertice	 origem;
 	vertice	 destino;
+	int visitada;
 };
 
 
@@ -99,6 +100,7 @@ static aresta cria_aresta( lista lv, Agedge_t *e ){
 	aresta a   = malloc(sizeof(struct aresta));
 	a->origem  = busca_vertice(lv, agnameof(agtail(e)));
 	a->destino = busca_vertice(lv, agnameof(aghead(e)));
+	a->visitada = 0;
 	char *peso = agget( e, findme );
 	a->peso    = peso ? strtol(peso,NULL,10) : 0;
 	free(findme);
@@ -150,11 +152,15 @@ static lista arestas( grafo g ) {
 
 		vertice v = conteudo(nv);
 
+		printf("      arestas de %s:\n", v->nome);
 		for( no na = primeiro_no(v->arestas_saida); na; na = proximo_no(na) ){
 			aresta a = conteudo(na);
+			printf("%s -- %s ", a->origem->nome, a->destino->nome);
+			printf("\n");
 			if( !busca_aresta(la, a->origem, a->destino) )
 				insere_lista( a, la );
 		}
+		printf("\n");
 
 		if( g->direcionado ) {
 			for( no na = primeiro_no(v->arestas_entrada); na; na = proximo_no(na) ){
@@ -336,9 +342,11 @@ grafo le_grafo(FILE *input) {
 		else {
 
 			for( Agedge_t *e = agfstedge(ag,v); e; e = agnxtedge(ag,e,v) ){
+				if (agtail(e) != v) continue;
 				aresta at = cria_aresta(g->vertices, e);
 				if( at->peso != 0 ) g->ponderado = 1;
-				insere_lista(at, vt->arestas_saida);
+				insere_lista(at, at->origem->arestas_saida);
+				insere_lista(at, at->destino->arestas_saida);
 			}
 		}
 	}

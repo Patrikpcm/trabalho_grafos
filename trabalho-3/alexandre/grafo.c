@@ -32,7 +32,7 @@ static void xor(lista l);
 
 static void desvisita_vertices(grafo g);
 
-static grafo grafo_emparelhamento(grafo g, lista l);
+static grafo grafo_emparelhamento(grafo g);
 
 // =============================================================================
 // === FIM : Escopos de estrutura de dados e funções auxiliares ================
@@ -205,6 +205,10 @@ static int destroi_aresta( void *ptr ){
 
 	struct aresta *a = ptr;
 
+	if( !a->visitada ) {
+		a->visitada = 1;
+		return 1;
+	}
 	if( a ){
 		free( a );
 		return 1;
@@ -220,6 +224,7 @@ static int destroi_vertice( void *ptr ){
 	struct vertice *v = ptr;
 
 	if( v ){
+		free(v->nome);
 		int e = destroi_lista( v->arestas_entrada, destroi_aresta );
 		int s = destroi_lista( v->arestas_saida,   destroi_aresta );
 		if( e && s ) {
@@ -506,9 +511,11 @@ grafo le_grafo(FILE *input) {
 		else {
 
 			for( Agedge_t *e = agfstedge(ag,v); e; e = agnxtedge(ag,e,v) ){
+				if( agtail(e) != v ) continue;
 				aresta at = cria_aresta(g->vertices, e);
 				if( at->peso != 0 ) g->ponderado = 1;
-				insere_lista(at, vt->arestas_saida);
+				insere_lista(at, at->origem->arestas_saida);
+				insere_lista(at, at->destino->arestas_saida);
 			}
 		}
 	}
@@ -581,6 +588,7 @@ grafo escreve_grafo(FILE *output, grafo g) {
 		fprintf( output, "\n" );
 	}
     fprintf( output, "}\n" );
+    destroi_lista(la, NULL);
 
     return g;
 }
@@ -719,21 +727,19 @@ static int busca_caminho(vertice v, lista l, int last) {
 // pra cada vértice não coberto (e retorna assim que achar)
 // e last é inicialmente 1, pois a primeira aresta será 0 (não coberta) 
 
-	if ( !v->coberto && !v->visitado )
+	if ( !v->coberto && !v->visitado ) {
 		return 1; // true
+	}
 	v->visitado = 1;
 	lista la = v->arestas_saida;
-	//for arestas de v {
+
 	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
 		aresta  a = conteudo(n);
-		if (a->coberta != last)
-			continue;
+		if (a->coberta == last) continue;
 		vertice outro = a->origem == v ? a->destino : a->origem;
-		if( ! outro->visitado ){
-			if (!vizinho->visitado && busca_caminho(outro, l, !last)) {
-				insere_lista(a, l);
-				return 1; // true
-			}
+		if (!outro->visitado && busca_caminho(outro, l, !last)) {
+			insere_lista(a, l);
+			return 1; // true
 		}
 	}
 	return 0; //false
@@ -745,24 +751,25 @@ static lista caminho_aumentante(grafo g) {
 
 	if( !g ) return NULL;
     
-    lista l = constroi_lista();
+    lista l;
 	
-	//for v in g->vertices {
     for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
         vertice v = conteudo(n);
-		if( v->coberto == 0 ) {
-			v->visitado = 1
+		if( !v->coberto ) {
+			v->visitado = 1;
+			l = constroi_lista();
 			if( busca_caminho(v, l, 1) ) {
-				return l
-            }
-			else {
+				return l;
+            } 
+            else {
+				printf("busca deu errado\n");
 				desvisita_vertices(g);
 				destroi_lista(l, NULL);
             }
         }
 	}
 	desvisita_vertices(g);
-	return la; // ?
+	return NULL;
 } 
 
 //------------------------------------------------------------------------------
@@ -801,9 +808,9 @@ static grafo grafo_emparelhamento(grafo g) {
     e->direcionado = g->direcionado;
     e->ponderado   = g->ponderado;
     e->vertices = constroi_lista();	
-    for( nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) ){
+    for( no nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) ){
 		vertice ve = malloc(sizeof(struct vertice));
-		vg = conteudo(nv);
+		vertice vg = conteudo(nv);
 		ve->nome = malloc(sizeof(char) * strlen(nome_vertice(vg))+1);
 		strcpy(ve->nome, nome_vertice(vg));
 		ve->visitado = 0;
@@ -814,17 +821,19 @@ static grafo grafo_emparelhamento(grafo g) {
 	}
     e->n_vertices = tamanho_lista(e->vertices);
     e->n_arestas  = 0;
-	for( nv = primeiro_no(e->vertices); nv; nv = proximo_no(nv) ){
+	for( no nv = primeiro_no(e->vertices); nv; nv = proximo_no(nv) ){
 		vertice ve = conteudo(nv);
         vertice vg = busca_vertice(g->vertices, nome_vertice(ve));
-        for( na = primeiro_no(vg->arestas_saida); na; na = proximo_no(na) ){
-			ag = conteudo(na);
+        for( no na = primeiro_no(vg->arestas_saida); na; na = proximo_no(na) ){
+			aresta ag = conteudo(na);
+			if (ag->origem != vg) continue;
             if( ag->coberta ){
                 aresta ae = copia_aresta( ag, e );
-                insere_lista(ae, ve->arestas_saida);
+                insere_lista(ae, ae->destino->arestas_saida);
+                insere_lista(ae, ae->origem->arestas_saida);
+                e->n_arestas++;
             }
 		}
-        e->n_arestas += tamanho_lista(ve->arestas_saida);
     }
     return e;
 }
@@ -846,13 +855,6 @@ grafo emparelhamento_maximo(grafo g){
 		xor(lv);
 		destroi_lista(lv, NULL);
 	}
-    
-
-    
-//	grafo e = novo_grafo();
-//	copia_vertices(e,g);
-//	copia_arestas_cobertas(e,g);
-	
     return grafo_emparelhamento(g);
 }
 

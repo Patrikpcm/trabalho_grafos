@@ -15,6 +15,7 @@ int main(void) {
 	printf("%s ponderado\n",   ponderado(g)   ? "" : "não");
 	printf("%d vértices\n",    n_vertices(g));
 	printf("%d arestas\n",     n_arestas(g));
+	escreve_grafo(stdout, g);
 	
 	grafo e = emparelhamento_maximo(g);
 	printf("\nEmparelhamento Máximo:\n");
@@ -29,4 +30,6 @@ int main(void) {
 	escreve_grafo(stdout, e);
 
 	return ! (destroi_grafo(e) && destroi_grafo(g));
+	
+	return !destroi_grafo(g);
 }
