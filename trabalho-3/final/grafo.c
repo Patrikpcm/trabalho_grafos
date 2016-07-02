@@ -24,7 +24,15 @@ static int destroi_aresta( void *ptr );
 
 static int destroi_vertice( void *ptr );
 
-static grafo novo_grafo( char *nome );
+static int busca_caminho(vertice v, lista l, int last);
+
+static lista caminho_aumentante(grafo g);
+
+static void xor(lista l);
+
+static void desvisita_vertices(grafo g);
+
+static grafo grafo_emparelhamento(grafo g);
 
 // =============================================================================
 // === FIM : Escopos de estrutura de dados e funções auxiliares ================
@@ -197,6 +205,10 @@ static int destroi_aresta( void *ptr ){
 
 	struct aresta *a = ptr;
 
+	if( !a->visitada ) {
+		a->visitada = 1;
+		return 1;
+	}
 	if( a ){
 		free( a );
 		return 1;
@@ -212,6 +224,7 @@ static int destroi_vertice( void *ptr ){
 	struct vertice *v = ptr;
 
 	if( v ){
+		free(v->nome);
 		int e = destroi_lista( v->arestas_entrada, destroi_aresta );
 		int s = destroi_lista( v->arestas_saida,   destroi_aresta );
 		if( e && s ) {
@@ -498,9 +511,11 @@ grafo le_grafo(FILE *input) {
 		else {
 
 			for( Agedge_t *e = agfstedge(ag,v); e; e = agnxtedge(ag,e,v) ){
+				if( agtail(e) != v ) continue;
 				aresta at = cria_aresta(g->vertices, e);
 				if( at->peso != 0 ) g->ponderado = 1;
-				insere_lista(at, vt->arestas_saida);
+				insere_lista(at, at->origem->arestas_saida);
+				insere_lista(at, at->destino->arestas_saida);
 			}
 		}
 	}
@@ -573,6 +588,7 @@ grafo escreve_grafo(FILE *output, grafo g) {
 		fprintf( output, "\n" );
 	}
     fprintf( output, "}\n" );
+    destroi_lista(la, NULL);
 
     return g;
 }
@@ -704,60 +720,122 @@ unsigned int grau(vertice v, int direcao, grafo g) {
 // =============================================================================
 
 //------------------------------------------------------------------------------
-// Devolve um grafo vazio ou null em caso de erro
-
-static aresta busca_aresta( lista l, vertice origem, vertice destino ) {
-
-	if( !l ) return NULL;
-
-	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
-
-		aresta  a = conteudo(n);
-		if( (origem == a->origem) && (destino == a->destino) )
-			return a;
-	}
-	return NULL;
-}
-
-
-
-static grafo novo_grafo(char *nome) {
-    
-	grafo ng = malloc(sizeof(struct grafo));
-    if( !ng ) return NULL;
-
-	ng->vertices = constroi_lista();
-    ng->nome = malloc(sizeof(char) * strlen(nome)+1);
-    strcpy(ng->nome, nome);
-    ng->direcionado = 0;
-    ng->ponderado   = 0;
-    ng->n_vertices  = 0;
-    ng->n_arestas   = 0;
-
-    return ng;
-}
-
-/*
-int busca_caminho(v, l, last) {
+//
+static int busca_caminho(vertice v, lista l, int last) {
   
-    // essa função é chamada pela função que tenta achar um caminho aumentante 
-	// pra cada vértice não coberto (e retorna assim que achar)
-	// e last é inicialmente 1, pois a primeira aresta será 0 (não coberta) 
+// essa função é chamada pela função que tenta achar um caminho aumentante 
+// pra cada vértice não coberto (e retorna assim que achar)
+// e last é inicialmente 1, pois a primeira aresta será 0 (não coberta) 
 
-	if ( !v->coberto && !v->visitado )
-		return true;
-	v->visitado = 1;
-	for arestas de v {
-		if (a->coberta != last)
-			if (!vizinho->visitado && busca_caminho(vizinho, l, !last)) {
-				insere_lista(a, l);
-				return true;
-			}
+	if ( !v->coberto && !v->visitado ) {
+		return 1; 
 	}
-	return false;
+	v->visitado = 1;
+	lista la = v->arestas_saida;
+
+	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
+		aresta  a = conteudo(n);
+		if (a->coberta == last) continue;
+		vertice outro = a->origem == v ? a->destino : a->origem;
+		if (!outro->visitado && busca_caminho(outro, l, !last)) {
+			insere_lista(a, l);
+			return 1; 
+		}
+	}
+	return 0; 
 }
- 
-*/
+
+//------------------------------------------------------------------------------
+//
+static lista caminho_aumentante(grafo g) {
+
+	if( !g ) return NULL;
+    
+    lista l;
+	
+    for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
+        vertice v = conteudo(n);
+		if( !v->coberto ) {
+			v->visitado = 1;
+			l = constroi_lista();
+			if( busca_caminho(v, l, 1) ) {
+				return l;
+            } 
+            else {
+				desvisita_vertices(g);
+				destroi_lista(l, NULL);
+            }
+        }
+	}
+	desvisita_vertices(g);
+	return NULL;
+} 
+
+//------------------------------------------------------------------------------
+//
+static void xor(lista la) {
+
+	for( no n = primeiro_no(la); n; n = proximo_no(n) ){
+		aresta  a = conteudo(n);
+		a->coberta = !a->coberta;
+		a->origem->coberto  = 1;
+		a->destino->coberto = 1;
+	}
+	return;
+}
+
+//------------------------------------------------------------------------------
+//
+static void desvisita_vertices(grafo g) {
+    
+    for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
+        vertice v = conteudo(n);
+        v->visitado = 0;
+    }
+    return;
+}
+
+//------------------------------------------------------------------------------
+//
+static grafo grafo_emparelhamento(grafo g) {
+    
+    grafo e = malloc(sizeof(struct grafo));
+    if( !e ) return NULL;
+
+    e->nome = malloc(sizeof(char) * strlen(g->nome)+1);
+    strcpy(e->nome,  g->nome);
+    e->direcionado = g->direcionado;
+    e->ponderado   = g->ponderado;
+    e->vertices = constroi_lista();	
+    for( no nv = primeiro_no(g->vertices); nv; nv = proximo_no(nv) ){
+		vertice ve = malloc(sizeof(struct vertice));
+		vertice vg = conteudo(nv);
+		ve->nome = malloc(sizeof(char) * strlen(nome_vertice(vg))+1);
+		strcpy(ve->nome, nome_vertice(vg));
+		ve->visitado = 0;
+		ve->coberto  = vg->coberto;
+		ve->arestas_saida   = constroi_lista();
+		ve->arestas_entrada = constroi_lista();
+		insere_lista(ve, e->vertices);
+	}
+    e->n_vertices = tamanho_lista(e->vertices);
+    e->n_arestas  = 0;
+	for( no nv = primeiro_no(e->vertices); nv; nv = proximo_no(nv) ){
+		vertice ve = conteudo(nv);
+        vertice vg = busca_vertice(g->vertices, nome_vertice(ve));
+        for( no na = primeiro_no(vg->arestas_saida); na; na = proximo_no(na) ){
+			aresta ag = conteudo(na);
+			if (ag->origem != vg) continue;
+            if( ag->coberta ){
+                aresta ae = copia_aresta( ag, e );
+                insere_lista(ae, ae->destino->arestas_saida);
+                insere_lista(ae, ae->origem->arestas_saida);
+                e->n_arestas++;
+            }
+		}
+    }
+    return e;
+}
 
 //------------------------------------------------------------------------------
 // devolve um grafo cujos vertices são cópias de vértices do grafo
@@ -771,77 +849,14 @@ grafo emparelhamento_maximo(grafo g){
 	
     if( !g ) return NULL;
     
-	grafo e = novo_grafo(nome_grafo(g));
-    if( !e ) return NULL;
-	
-	lista l = g->vertices;
-	
-	    
-    
-/*
-	enquanto (l = caminho_aumentante(g)) {
-		xor(l);
+    lista  lv;
+	while((lv = caminho_aumentante(g)) != NULL) {
+		xor(lv);
+		destroi_lista(lv, NULL);
 	}
-	grafo e = novo_grafo();
-	copia_vertices(e,g);
-	copia_arestas_cobertas(e,g);
-	return e;
-*/
-	return e;
+    return grafo_emparelhamento(g);
 }
 
-
-lista caminho_alternante(grafo g){
-	//constroi lista com caminho
-	lista retorno = constroi_lista();
-	lista l = g->vertices;
-	int alterna = 0;
-	
-	for( no n = primeiro_no(l); n; n = proximo_no(n) ){
-		vertice v =  conteudo(n);
-		v->visitado = 1;
-		vertice ret_ext = cria_vertice(v->nome);
-		ret_ext -> visitado = 1;
-		ret_ext -> coberto = 1;
-		
-		lista viz = vizinhanca(v,0,g);
-		for( no m = primeiro_no(viz);m;m = proximo_no(m)){
-			vertice x =conteudo(m);
-			if(x-> !visitado && !x->coberto){
-				x->visitado = 1;
-				aresta a =  busca_aresta(l,v,x);
-				v->coberto = 1;
-				if(alterna ==1){
-				a->coberto = 1;
-				alterna =0;
-				}
-				else{
-				a->coberto = 0;
-				alterna =1;	
-				}
-				vertice ret_int =cria_vertice(x->nome);
-				ret_int->visitado = 1;
-				ret_int->coberto  = 1;
-				insere_lista(a,ret_int->arestas_entrada);
-				insere_lista(a,ret_ext->aresta_saida);
-				insere_lista(ret_int,retorno);
-			}
-			
-		}
-			insere_lista(ret_ext,retorno);
-	}
-	return retorno;
-}
-
-vertice cria_vertice(char* nome){
-	vertice vt = malloc(sizeof(struct vertice));
-				vt->nome   = malloc(sizeof(char) * strlen(nome)+1);
-				strcpy( vt->nome, nome);
-				vt->visitado = 0;
-				vt->coberto  = 0;
-				vt->arestas_saida   = constroi_lista();
-				vt->arestas_entrada = constroi_lista();
-}
 
 // =============================================================================
 // === FIM : Funções implementadas referentes a definição do trabalho 3 ========
